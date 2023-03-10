@@ -113,7 +113,8 @@ public class RobotCentricMecanum extends LinearOpMode {
                 gripServo.setPosition(0.875);
                 leftV4B.setPosition(0.0);
                 rightV4B.setPosition(0.0);
-                guide.setPosition(0.0);
+                leftGuide.setPosition(0.0);
+                rightGuide.setPosition(0.0);
             }
 
             if (gamepad2.b) {
