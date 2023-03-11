@@ -176,8 +176,8 @@ public class AprilTagRIGHT extends LinearOpMode
                 // Go to park
                 .splineTo(new Vector2d(36, -24), Math.toRadians(270))
                 // Parking spot 1
-                .splineTo(new Vector2d(-48, -36), Math.toRadians(180))
-                .splineTo(new Vector2d(-60, -36), Math.toRadians(270))
+                .splineTo(new Vector2d(24, -36), Math.toRadians(180))
+                .splineTo(new Vector2d(12, -36), Math.toRadians(270))
                 .build();
 
         TrajectorySequence parkingTwo = drive.trajectorySequenceBuilder(startPose)
@@ -299,8 +299,8 @@ public class AprilTagRIGHT extends LinearOpMode
                 // Go to park
                 .splineTo(new Vector2d(36, -24), Math.toRadians(270))
                 // Parking spot 3
-                .splineTo(new Vector2d(-24, -36), Math.toRadians(0))
-                .splineTo(new Vector2d(-12, -36), Math.toRadians(270))
+                .splineTo(new Vector2d(48, -36), Math.toRadians(0))
+                .splineTo(new Vector2d(60, -36), Math.toRadians(270))
                 .build();
 
         //drive.followTrajectorySequenceAsync(trajSeq);
