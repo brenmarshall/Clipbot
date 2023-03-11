@@ -19,8 +19,6 @@ import org.firstinspires.ftc.teamcode.util.PIDController;
 public class RobotCentricMecanum extends LinearOpMode {
 
     double vertPow, gripPos;
-    boolean topPressed, bottomPressed = false;
-    double MIN_POSITION = 0.9, MAX_POSITION = 1;
     double multiplier = 1.0;
 
     public static double Kp = 0.005, Ki = 0, Kd = 0;
@@ -47,54 +45,31 @@ public class RobotCentricMecanum extends LinearOpMode {
         Servo rightV4B = hardwareMap.servo.get("rightV4B");
         Servo leftGuide = hardwareMap.servo.get("leftGuide");
         Servo rightGuide = hardwareMap.servo.get("rightGuide");
-        Servo guide = hardwareMap.servo.get("guide");
-        Servo signal = hardwareMap.servo.get("signal");
 
         liftEncoder = hardwareMap.get(DcMotorEx.class, "motorFrontRight");
         liftMotor = hardwareMap.crservo.get("vertical"); // Ensure Spark Mini is on Braking
 
-        //liftEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //liftEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        // Touch Sensors
-        //TouchSensor bottom = hardwareMap.touchSensor.get("bottom");
-        //TouchSensor top = hardwareMap.touchSensor.get("top");
 
         // Declare our motors
         // Make sure your ID's match your configuration
-        DcMotor motorFrontLeft = hardwareMap.dcMotor.get("motorFrontLeft");
-        DcMotor motorBackLeft = hardwareMap.dcMotor.get("motorBackLeft");
-        DcMotor motorFrontRight = hardwareMap.dcMotor.get("motorFrontRight");
-        DcMotor motorBackRight = hardwareMap.dcMotor.get("motorBackRight");
-
-        // Reverse the right side motors
-        motorFrontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorBackRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        DcMotor motorLeft = hardwareMap.dcMotor.get("motorLeft");
+        DcMotor motorRight = hardwareMap.dcMotor.get("motorRight");
 
         telemetry.addLine("Ready");
         telemetry.update();
-
-        gripPos = 0.5;
-        vertPow = 0;
-
 
         waitForStart();
 
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
-            signal.setPosition(0.55);
             if(gamepad1.left_trigger > 0.2 || gamepad1.right_trigger > 0.2 || gamepad1.left_bumper || gamepad1.right_bumper) {
                 multiplier = 0.5;
             }
             else {
                 multiplier = 1.0;
             }
-
-            double y = -gamepad1.left_stick_y * multiplier; // Remember, this is reversed!
-            double x = gamepad1.left_stick_x * 1.1 * multiplier; // Counteract imperfect strafing
-            double rx = gamepad1.right_stick_x * 0.6;
 
             Boolean manual = false;
 
@@ -103,10 +78,6 @@ public class RobotCentricMecanum extends LinearOpMode {
 
             double rTrigger = gamepad2.right_trigger;
             double lTrigger = gamepad2.left_trigger;
-
-            //bottomPressed = bottom.isPressed();
-            //topPressed = top.isPressed();
-
 
             // Gripper
             if (gamepad2.a) {
@@ -118,18 +89,17 @@ public class RobotCentricMecanum extends LinearOpMode {
             }
 
             if (gamepad2.b) {
-                gripServo.setPosition(1.0);
+                leftV4B.setPosition(1.0);
+                rightV4B.setPosition(1.0);
+                leftGuide.setPosition(1.0);
+                rightGuide.setPosition(1.0);
             }
-            gripPos = Range.clip(gripPos, MIN_POSITION, MAX_POSITION);
-
 
             // Guide
             if (gamepad2.x) {
-                guide.setPosition(0.33);
-                telemetry.addData("Guide Pos", 0.33);
+                leftGuide.setPosition(0.33);
             } else if (gamepad2.y) {
-                guide.setPosition(0.0);
-                telemetry.addData("Guide Pos", 0.0);
+                leftGuide.setPosition(0.0);
             }
 
             // Auto heights
@@ -143,14 +113,6 @@ public class RobotCentricMecanum extends LinearOpMode {
                 targetInches = 1;
             }
 
-            if (gamepad2.guide) {
-                if (manual) {
-                    manual = false;
-                }
-                else {
-                    manual = true;
-                }
-            }
 
             // Vertical Slides
             if (manual) {
@@ -184,29 +146,14 @@ public class RobotCentricMecanum extends LinearOpMode {
                 liftMotor.setPower(command);
             }
 
-            //gripServo.setPosition(Range.clip(gripPos, MIN_POSITION, MAX_POSITION));
+            // drivePower is the power for forward/backward movement
+            // rotatePower is the power for rotating the robot
+            float drivePower = -gamepad1.left_stick_y;
+            float rotatePower = gamepad1.right_stick_x;
 
-            telemetry.addData("gripPos", gripPos);
-            telemetry.addData("vertPow", vertPow);
-
-            // Denominator is the largest motor power (absolute value) or 1
-            // This ensures all the powers maintain the same ratio, but only when
-            // at least one is out of the range [-1, 1]
-            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-            double frontLeftPower = (y + x + rx) / denominator;
-            double backLeftPower = (y - x + rx) / denominator;
-            double frontRightPower = (y - x - rx) / denominator;
-            double backRightPower = (y + x - rx) / denominator;
-
-            packet.put("frontLeftPower", frontLeftPower);
-            packet.put("frontRightPower", frontRightPower);
-            packet.put("backLeftPower", backLeftPower);
-            packet.put("backRightPower", backRightPower);
-
-            motorFrontLeft.setPower(frontLeftPower);
-            motorBackLeft.setPower(backLeftPower);
-            motorFrontRight.setPower(frontRightPower);
-            motorBackRight.setPower(backRightPower);
+            // Flip these signs if the robot rotates the wrong way
+            motorLeft.setPower(drivePower + rotatePower);
+            motorRight.setPower(drivePower - rotatePower);
 
             telemetry.update();
             dashboardTelemetry.update();
