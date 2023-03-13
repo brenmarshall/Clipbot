@@ -4,9 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
@@ -15,7 +13,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.util.PIDController;
 
 // Warning: this code is garbage and nobody knows how it works :D
-@TeleOp(name="RobotCentric")
+@TeleOp(name="RobotCentricTank")
 public class RobotCentricMecanum extends LinearOpMode {
 
     double vertPow, gripPos;
@@ -26,9 +24,6 @@ public class RobotCentricMecanum extends LinearOpMode {
 
     FtcDashboard dashboard = FtcDashboard.getInstance();
     Telemetry dashboardTelemetry = dashboard.getTelemetry();
-
-    DcMotorEx liftEncoder;
-    CRServo liftMotor;
 
     PIDController control = new PIDController(Kp, Ki, Kd, dashboardTelemetry);
 
@@ -46,15 +41,16 @@ public class RobotCentricMecanum extends LinearOpMode {
         Servo leftGuide = hardwareMap.servo.get("leftGuide");
         Servo rightGuide = hardwareMap.servo.get("rightGuide");
 
-        liftEncoder = hardwareMap.get(DcMotorEx.class, "motorFrontRight");
-        liftMotor = hardwareMap.crservo.get("vertical"); // Ensure Spark Mini is on Braking
-
-        liftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-
         // Declare our motors
         // Make sure your ID's match your configuration
-        DcMotor motorLeft = hardwareMap.dcMotor.get("motorLeft");
-        DcMotor motorRight = hardwareMap.dcMotor.get("motorRight");
+        DcMotor liftMotorLeft = hardwareMap.dcMotor.get("liftMotorLeft");
+        DcMotor liftMotorRight = hardwareMap.dcMotor.get("liftMotorRight");
+
+        DcMotor driveMotorLeft = hardwareMap.dcMotor.get("driveMotorLeft");
+        DcMotor driveMotorRight = hardwareMap.dcMotor.get("driveMotorRight");
+
+        driveMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        liftMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
         telemetry.addLine("Ready");
         telemetry.update();
@@ -71,46 +67,78 @@ public class RobotCentricMecanum extends LinearOpMode {
                 multiplier = 1.0;
             }
 
+            if(targetInches < 10) {
+                multiplier = 0.5;
+            }
+            else {
+                multiplier = 1;
+            }
+
             Boolean manual = false;
 
-            Boolean rBump = gamepad2.right_bumper;
-            Boolean lBump = gamepad2.left_bumper;
+            Boolean rBump = gamepad1.right_bumper;
+            Boolean lBump = gamepad1.left_bumper;
 
-            double rTrigger = gamepad2.right_trigger;
-            double lTrigger = gamepad2.left_trigger;
+            double rTrigger = gamepad1.right_trigger;
+            double lTrigger = gamepad1.left_trigger;
 
             // Gripper
-            if (gamepad2.a) {
-                gripServo.setPosition(0.875);
-                leftV4B.setPosition(0.0);
-                rightV4B.setPosition(0.0);
+            if (gamepad1.x) {
+                if (targetInches >= 1) {
+                    targetInches = targetInches - 1;
+                    gripServo.setPosition(0.8);
+                    leftV4B.setPosition(0.0);
+                    rightV4B.setPosition(0.83);
+                    leftGuide.setPosition(0.0);
+                    rightGuide.setPosition(0.3);
+                    targetInches = 0;
+                } else {
+                    gripServo.setPosition(0.8);
+                }
+            }
+
+            if (gamepad1.dpad_right) {
+                gripServo.setPosition(1.0);
+            }
+
+            // Guide
+            if (gamepad1.dpad_left) {
                 leftGuide.setPosition(0.0);
+                rightGuide.setPosition(0.3);
+            } else if (gamepad1.dpad_up) {
+                leftGuide.setPosition(0.3);
                 rightGuide.setPosition(0.0);
             }
 
-            if (gamepad2.b) {
+            // Auto heights
+            if (gamepad1.y) {
+                gripServo.setPosition(1.0);
+                targetInches = 23;
+                leftV4B.setPosition(0.83);
+                rightV4B.setPosition(0.0);
+                leftGuide.setPosition(0.0);
+                rightGuide.setPosition(0.3);
+            } else if (gamepad1.b) {
+                gripServo.setPosition(1.0);
+                targetInches = 13;
+                leftV4B.setPosition(0.0);
+                rightV4B.setPosition(0.83);
+                leftGuide.setPosition(0.3);
+                rightGuide.setPosition(0.0);
+            } else if (gamepad1.a) {
+                gripServo.setPosition(1.0);
+                targetInches = 1;
                 leftV4B.setPosition(1.0);
                 rightV4B.setPosition(1.0);
                 leftGuide.setPosition(1.0);
                 rightGuide.setPosition(1.0);
-            }
-
-            // Guide
-            if (gamepad2.x) {
-                leftGuide.setPosition(0.33);
-            } else if (gamepad2.y) {
+            } else if (gamepad1.dpad_down) {
+                gripServo.setPosition(0.8);
+                targetInches = 0;
+                leftV4B.setPosition(0.0);
+                rightV4B.setPosition(0.0);
                 leftGuide.setPosition(0.0);
-            }
-
-            // Auto heights
-            if (gamepad2.dpad_up) {
-                targetInches = 38;
-            } else if (gamepad2.dpad_right) {
-                targetInches = 28;
-            } else if (gamepad2.dpad_down) {
-                targetInches = 18;
-            } else if (gamepad2.dpad_left) {
-                targetInches = 1;
+                rightGuide.setPosition(0.0);
             }
 
 
@@ -132,18 +160,24 @@ public class RobotCentricMecanum extends LinearOpMode {
                     vertPow = 0.0;
                 }
                 int targetPosition = (int)(targetInches * 30.72);
-                control.update(targetPosition, liftEncoder.getCurrentPosition());
+                control.update(targetPosition, liftMotorLeft.getCurrentPosition());
+                control.update(targetPosition, liftMotorRight.getCurrentPosition());
 
-                liftMotor.setPower(vertPow);
+                liftMotorLeft.setPower(vertPow);
+                liftMotorRight.setPower(vertPow);
             }
             else {
                 int targetPosition = (int)(targetInches * 30.72);
                 // Update pid controller
-                double command = control.update(targetPosition, liftEncoder.getCurrentPosition());
-                command = Range.clip(command, -1, 1);
+                double leftCommand = control.update(targetPosition, liftMotorLeft.getCurrentPosition());
+                double rightCommand = control.update(targetPosition, liftMotorRight.getCurrentPosition());
+                leftCommand = Range.clip(leftCommand, -1, 1);
+                rightCommand = Range.clip(rightCommand, -1, 1);
                 // Assign PID output
-                dashboardTelemetry.addData("Command", command);
-                liftMotor.setPower(command);
+                dashboardTelemetry.addData("Command", leftCommand);
+                dashboardTelemetry.addData("Command", rightCommand);
+                liftMotorLeft.setPower(leftCommand);
+                liftMotorLeft.setPower(rightCommand);
             }
 
             // drivePower is the power for forward/backward movement
@@ -152,8 +186,8 @@ public class RobotCentricMecanum extends LinearOpMode {
             float rotatePower = gamepad1.right_stick_x;
 
             // Flip these signs if the robot rotates the wrong way
-            motorLeft.setPower(drivePower + rotatePower);
-            motorRight.setPower(drivePower - rotatePower);
+            driveMotorLeft.setPower((drivePower + rotatePower) * multiplier);
+            driveMotorRight.setPower((drivePower - rotatePower) * multiplier);
 
             telemetry.update();
             dashboardTelemetry.update();
