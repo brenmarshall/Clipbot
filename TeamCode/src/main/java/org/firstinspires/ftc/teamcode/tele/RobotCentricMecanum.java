@@ -16,11 +16,11 @@ import org.firstinspires.ftc.teamcode.util.PIDController;
 @TeleOp(name="RobotCentricTank")
 public class RobotCentricMecanum extends LinearOpMode {
 
-    double vertPow, gripPos;
     double multiplier = 1.0;
 
     public static double Kp = 0.005, Ki = 0, Kd = 0;
-    public static int targetInches = 0;
+    public static double targetInches = 0.0;
+    public static int stackHeight = 0;
 
     FtcDashboard dashboard = FtcDashboard.getInstance();
     Telemetry dashboardTelemetry = dashboard.getTelemetry();
@@ -60,29 +60,17 @@ public class RobotCentricMecanum extends LinearOpMode {
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
-            if(gamepad1.left_trigger > 0.2 || gamepad1.right_trigger > 0.2 || gamepad1.left_bumper || gamepad1.right_bumper) {
+            if(gamepad1.left_trigger > 0.2) {
+                multiplier = 0.5;
+            }
+            else if(targetInches < 10) {
                 multiplier = 0.5;
             }
             else {
                 multiplier = 1.0;
             }
 
-            if(targetInches < 10) {
-                multiplier = 0.5;
-            }
-            else {
-                multiplier = 1;
-            }
-
-            Boolean manual = false;
-
-            Boolean rBump = gamepad1.right_bumper;
-            Boolean lBump = gamepad1.left_bumper;
-
-            double rTrigger = gamepad1.right_trigger;
-            double lTrigger = gamepad1.left_trigger;
-
-            // Gripper
+            // Release cone
             if (gamepad1.x) {
                 if (targetInches >= 1) {
                     targetInches = targetInches - 1;
@@ -96,7 +84,7 @@ public class RobotCentricMecanum extends LinearOpMode {
                     gripServo.setPosition(0.8);
                 }
             }
-
+            // Manual claw
             if (gamepad1.dpad_right) {
                 gripServo.setPosition(1.0);
             }
@@ -113,72 +101,55 @@ public class RobotCentricMecanum extends LinearOpMode {
             // Auto heights
             if (gamepad1.y) {
                 gripServo.setPosition(1.0);
-                targetInches = 23;
+                targetInches = 21;
                 leftV4B.setPosition(0.83);
                 rightV4B.setPosition(0.0);
                 leftGuide.setPosition(0.0);
                 rightGuide.setPosition(0.3);
             } else if (gamepad1.b) {
                 gripServo.setPosition(1.0);
-                targetInches = 13;
-                leftV4B.setPosition(0.0);
-                rightV4B.setPosition(0.83);
-                leftGuide.setPosition(0.3);
-                rightGuide.setPosition(0.0);
+                targetInches = 11;
+                leftV4B.setPosition(0.83);
+                rightV4B.setPosition(0.0);
+                leftGuide.setPosition(0.0);
+                rightGuide.setPosition(0.3);
             } else if (gamepad1.a) {
                 gripServo.setPosition(1.0);
                 targetInches = 1;
-                leftV4B.setPosition(1.0);
-                rightV4B.setPosition(1.0);
-                leftGuide.setPosition(1.0);
-                rightGuide.setPosition(1.0);
+                leftV4B.setPosition(0.83);
+                rightV4B.setPosition(0.0);
+                leftGuide.setPosition(0.0);
+                rightGuide.setPosition(0.3);
             } else if (gamepad1.dpad_down) {
                 gripServo.setPosition(0.8);
                 targetInches = 0;
                 leftV4B.setPosition(0.0);
-                rightV4B.setPosition(0.0);
-                leftGuide.setPosition(0.0);
+                rightV4B.setPosition(0.83);
+                leftGuide.setPosition(0.3);
                 rightGuide.setPosition(0.0);
             }
-
-
-            // Vertical Slides
-            if (manual) {
-                if (rTrigger > 0.2) {
-                    vertPow = -1.0;
-                }
-                else if (rBump) {
-                    vertPow = 1.0;
-                }
-                else if (lTrigger > 0.2) {
-                    vertPow = -0.5;
-                }
-                else if (lBump) {
-                    vertPow = 0.5;
-                }
-                else {
-                    vertPow = 0.0;
-                }
-                int targetPosition = (int)(targetInches * 30.72);
-                control.update(targetPosition, liftMotorLeft.getCurrentPosition());
-                control.update(targetPosition, liftMotorRight.getCurrentPosition());
-
-                liftMotorLeft.setPower(vertPow);
-                liftMotorRight.setPower(vertPow);
+            // Cone stack heights
+            if (gamepad1.right_trigger > 0.2 && targetInches >= 1) {
+                stackHeight = stackHeight - 1;
+                targetInches = stackHeight;
             }
-            else {
-                int targetPosition = (int)(targetInches * 30.72);
-                // Update pid controller
-                double leftCommand = control.update(targetPosition, liftMotorLeft.getCurrentPosition());
-                double rightCommand = control.update(targetPosition, liftMotorRight.getCurrentPosition());
-                leftCommand = Range.clip(leftCommand, -1, 1);
-                rightCommand = Range.clip(rightCommand, -1, 1);
-                // Assign PID output
-                dashboardTelemetry.addData("Command", leftCommand);
-                dashboardTelemetry.addData("Command", rightCommand);
-                liftMotorLeft.setPower(leftCommand);
-                liftMotorLeft.setPower(rightCommand);
+
+            if (gamepad1.right_bumper) {
+                stackHeight = stackHeight + 1;
+                targetInches = stackHeight;
             }
+
+            int targetPosition = (int)(targetInches * 30.72);
+            // Update pid controller
+            double leftCommand = control.update(targetPosition, liftMotorLeft.getCurrentPosition());
+            double rightCommand = control.update(targetPosition, liftMotorRight.getCurrentPosition());
+            leftCommand = Range.clip(leftCommand, -1, 1);
+            rightCommand = Range.clip(rightCommand, -1, 1);
+            // Assign PID output
+            dashboardTelemetry.addData("Command", leftCommand);
+            dashboardTelemetry.addData("Command", rightCommand);
+            liftMotorLeft.setPower(leftCommand);
+            liftMotorLeft.setPower(rightCommand);
 
             // drivePower is the power for forward/backward movement
             // rotatePower is the power for rotating the robot

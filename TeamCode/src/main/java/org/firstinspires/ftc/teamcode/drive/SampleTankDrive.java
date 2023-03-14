@@ -33,6 +33,7 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
@@ -94,12 +95,12 @@ public class SampleTankDrive extends TankDrive {
         imu.initialize(parameters);
 
         // add/remove motors depending on your robot (e.g., 6WD)
-        DcMotorEx left = hardwareMap.get(DcMotorEx.class, "left");
-        DcMotorEx right = hardwareMap.get(DcMotorEx.class, "right");
+        DcMotorEx driveMotorLeft = hardwareMap.get(DcMotorEx.class, "driveMotorLeft");
+        DcMotorEx driveMotorRight = hardwareMap.get(DcMotorEx.class, "driveMotorRight");
 
-        motors = Arrays.asList(left, right);
-        leftMotors = Arrays.asList(left);
-        rightMotors = Arrays.asList(right);
+        motors = Arrays.asList(driveMotorLeft, driveMotorRight);
+        leftMotors = Arrays.asList(driveMotorLeft);
+        rightMotors = Arrays.asList(driveMotorRight);
 
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
@@ -118,6 +119,7 @@ public class SampleTankDrive extends TankDrive {
         }
 
         // TODO: reverse any motors using DcMotor.setDirection()
+        driveMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // TODO: if desired, use setLocalizer() to change the localization method
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
