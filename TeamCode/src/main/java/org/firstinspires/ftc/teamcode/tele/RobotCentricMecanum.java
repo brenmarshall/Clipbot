@@ -16,11 +16,15 @@ import org.firstinspires.ftc.teamcode.util.PIDController;
 @TeleOp(name="RobotCentricTank")
 public class RobotCentricMecanum extends LinearOpMode {
 
-    double multiplier = 1.0;
-
-    public static double Kp = 0.005, Ki = 0, Kd = 0;
+    public static double Kp = 0.005, Ki = 0.0, Kd = 0.0;
     public static double targetInches = 0.0;
-    public static int stackHeight = 0;
+    public static double low = 1;
+    public static double medium = 11;
+    public static double high = 21;
+    public static double open = 0.8;
+    public static double closed = 1.0;
+    double multiplier = 1.0;
+    double stackHeight = 0.0;
 
     FtcDashboard dashboard = FtcDashboard.getInstance();
     Telemetry dashboardTelemetry = dashboard.getTelemetry();
@@ -64,7 +68,7 @@ public class RobotCentricMecanum extends LinearOpMode {
                 multiplier = 0.5;
             }
             else if(targetInches < 10) {
-                multiplier = 0.5;
+                multiplier = 0.75;
             }
             else {
                 multiplier = 1.0;
@@ -74,19 +78,19 @@ public class RobotCentricMecanum extends LinearOpMode {
             if (gamepad1.x) {
                 if (targetInches >= 1) {
                     targetInches = targetInches - 1;
-                    gripServo.setPosition(0.8);
+                    gripServo.setPosition(open);
                     leftV4B.setPosition(0.0);
                     rightV4B.setPosition(0.83);
                     leftGuide.setPosition(0.0);
                     rightGuide.setPosition(0.3);
                     targetInches = 0;
                 } else {
-                    gripServo.setPosition(0.8);
+                    gripServo.setPosition(open);
                 }
             }
             // Manual claw
             if (gamepad1.dpad_right) {
-                gripServo.setPosition(1.0);
+                gripServo.setPosition(closed);
             }
 
             // Guide
@@ -100,28 +104,28 @@ public class RobotCentricMecanum extends LinearOpMode {
 
             // Auto heights
             if (gamepad1.y) {
-                gripServo.setPosition(1.0);
-                targetInches = 21;
+                gripServo.setPosition(closed);
+                targetInches = high;
                 leftV4B.setPosition(0.83);
                 rightV4B.setPosition(0.0);
                 leftGuide.setPosition(0.0);
                 rightGuide.setPosition(0.3);
             } else if (gamepad1.b) {
-                gripServo.setPosition(1.0);
-                targetInches = 11;
+                gripServo.setPosition(closed);
+                targetInches = medium;
                 leftV4B.setPosition(0.83);
                 rightV4B.setPosition(0.0);
                 leftGuide.setPosition(0.0);
                 rightGuide.setPosition(0.3);
             } else if (gamepad1.a) {
-                gripServo.setPosition(1.0);
-                targetInches = 1;
+                gripServo.setPosition(closed);
+                targetInches = low;
                 leftV4B.setPosition(0.83);
                 rightV4B.setPosition(0.0);
                 leftGuide.setPosition(0.0);
                 rightGuide.setPosition(0.3);
             } else if (gamepad1.dpad_down) {
-                gripServo.setPosition(0.8);
+                gripServo.setPosition(open);
                 targetInches = 0;
                 leftV4B.setPosition(0.0);
                 rightV4B.setPosition(0.83);
