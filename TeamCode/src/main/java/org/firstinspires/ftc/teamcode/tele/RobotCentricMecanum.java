@@ -7,9 +7,13 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.util.PIDController;
 
 // Warning: this code is garbage and nobody knows how it works :D
@@ -25,6 +29,11 @@ public class RobotCentricMecanum extends LinearOpMode {
     public static double closed = 1.0;
     double multiplier = 1.0;
     double stackHeight = 0.0;
+
+    NormalizedColorSensor clawSensor;
+    NormalizedColorSensor guideSensor;
+    DistanceSensor clawDistanceSensor;
+    DistanceSensor guideDistanceSensor;
 
     FtcDashboard dashboard = FtcDashboard.getInstance();
     Telemetry dashboardTelemetry = dashboard.getTelemetry();
@@ -56,6 +65,11 @@ public class RobotCentricMecanum extends LinearOpMode {
         driveMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         liftMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        clawSensor = hardwareMap.get(NormalizedColorSensor.class, "clawSensor");
+        guideSensor = hardwareMap.get(NormalizedColorSensor.class, "guideSensor");
+        clawDistanceSensor = hardwareMap.get(DistanceSensor.class, "clawSensor");
+        guideDistanceSensor = hardwareMap.get(DistanceSensor.class, "guideSensor");
+
         telemetry.addLine("Ready");
         telemetry.update();
 
@@ -64,6 +78,18 @@ public class RobotCentricMecanum extends LinearOpMode {
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
+            NormalizedRGBA clawColors = clawSensor.getNormalizedColors();
+            NormalizedRGBA guideColors = guideSensor.getNormalizedColors();
+            double clawDistance = clawDistanceSensor.getDistance(DistanceUnit.MM);
+            double guideDistance = guideDistanceSensor.getDistance(DistanceUnit.MM);
+            if(clawColors.red > 0.9 && clawDistance < 20 || clawColors.blue > 0.9 && clawDistance < 20) {
+                gripServo.setPosition(closed);
+            }
+
+            if(guideColors.red > 0.9 && guideColors.green > 0.9 && guideDistance < 10 && targetInches >= 1) {
+                targetInches = targetInches - 1;
+            }
+
             if(gamepad1.left_trigger > 0.2) {
                 multiplier = 0.5;
             }
