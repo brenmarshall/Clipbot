@@ -82,11 +82,11 @@ public class RobotCentricMecanum extends LinearOpMode {
             NormalizedRGBA guideColors = guideSensor.getNormalizedColors();
             double clawDistance = clawDistanceSensor.getDistance(DistanceUnit.MM);
             double guideDistance = guideDistanceSensor.getDistance(DistanceUnit.MM);
-            if(clawColors.red > 0.9 && clawDistance < 20 || clawColors.blue > 0.9 && clawDistance < 20) {
+            if(clawColors.red > 0.9 && clawColors.green < 0.1 && clawColors.blue < 0.1 && clawDistance < 20 || clawColors.red < 0.1 && clawColors.green < 0.1 && clawColors.blue > 0.9 && clawDistance < 20) {
                 gripServo.setPosition(closed);
             }
 
-            if(guideColors.red > 0.9 && guideColors.green > 0.9 && guideDistance < 10 && targetInches >= 1) {
+            if(guideColors.red > 0.9 && guideColors.green > 0.9  && guideColors.blue < 0.1 && guideDistance < 10 && targetInches >= 1) {
                 targetInches = targetInches - 1;
             }
 
