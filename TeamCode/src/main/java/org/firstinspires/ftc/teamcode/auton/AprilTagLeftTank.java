@@ -29,8 +29,8 @@ import java.util.ArrayList;
 
 // Credit: OpenFTC for a lot
 @Config
-@Autonomous(name="Parking RIGHT SIDE")
-public class AprilTagRIGHT extends LinearOpMode
+@Autonomous(name="1+5 LEFT SIDE")
+public class AprilTagLeftTank extends LinearOpMode
 {
     public static double Kp = 0.005, Ki = 0, Kd = 0;
     public static double targetInches = 0.0;
@@ -88,7 +88,7 @@ public class AprilTagRIGHT extends LinearOpMode
         FtcDashboard dashboard = FtcDashboard.getInstance();
 
         SampleTankDrive drive = new SampleTankDrive(hardwareMap);
-        Pose2d startPose = new Pose2d(36, -64, Math.toRadians(90)); // Set start pose to center of the field, facing north
+        Pose2d startPose = new Pose2d(-36, -63, Math.toRadians(90)); // Set start pose to center of the field, facing north
         drive.setPoseEstimate(startPose);
 
         // Servo
@@ -136,7 +136,7 @@ public class AprilTagRIGHT extends LinearOpMode
                 })
 
                 // Go to score preload on low
-                .splineTo(new Vector2d(30, -54), Math.toRadians(135))
+                .splineTo(new Vector2d(-30, -54), Math.toRadians(45))
                 .waitSeconds(scoreTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(open);
@@ -148,10 +148,10 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to pick 1st cone off stack
                 .setReversed(true)
-                .splineTo(new Vector2d(36, -36), Math.toRadians(90))
-                .splineTo(new Vector2d(36, -24), Math.toRadians(90))
-                .splineTo(new Vector2d(48, -12), Math.toRadians(0))
-                .splineTo(new Vector2d(62, -12), Math.toRadians(0))
+                .splineTo(new Vector2d(-36, -36), Math.toRadians(90))
+                .splineTo(new Vector2d(-36, -24), Math.toRadians(90))
+                .splineTo(new Vector2d(-48, -12), Math.toRadians(180))
+                .splineTo(new Vector2d(-62, -12), Math.toRadians(180))
                 .waitSeconds(stackTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(closed);
@@ -167,8 +167,8 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to score 1st cone off stack on high
                 .setReversed(false)
-                .splineTo(new Vector2d(24, -12), Math.toRadians(180))
-                .splineTo(new Vector2d(6, -18), Math.toRadians(225))
+                .splineTo(new Vector2d(-24, -12), Math.toRadians(0))
+                .splineTo(new Vector2d(-6, -18), Math.toRadians(315))
                 .waitSeconds(scoreTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(open);
@@ -180,8 +180,8 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to pick 2nd cone off stack
                 .setReversed(true)
-                .splineTo(new Vector2d(24, -12), Math.toRadians(0))
-                .splineTo(new Vector2d(62, -12), Math.toRadians(0))
+                .splineTo(new Vector2d(-24, -12), Math.toRadians(180))
+                .splineTo(new Vector2d(-62, -12), Math.toRadians(180))
                 .waitSeconds(stackTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(closed);
@@ -197,7 +197,7 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to score 2nd cone off stack on low
                 .setReversed(false)
-                .splineTo(new Vector2d(54, -18), Math.toRadians(225))
+                .splineTo(new Vector2d(-54, -18), Math.toRadians(315))
                 .waitSeconds(scoreTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(open);
@@ -209,7 +209,7 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to pick 3rd cone off stack
                 .setReversed(true)
-                .splineTo(new Vector2d(62, -12), Math.toRadians(0))
+                .splineTo(new Vector2d(-62, -12), Math.toRadians(180))
                 .waitSeconds(stackTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(closed);
@@ -225,8 +225,8 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to score 3rd cone off stack on high
                 .setReversed(false)
-                .splineTo(new Vector2d(24, -12), Math.toRadians(180))
-                .splineTo(new Vector2d(6, -18), Math.toRadians(225))
+                .splineTo(new Vector2d(-24, -12), Math.toRadians(0))
+                .splineTo(new Vector2d(-6, -18), Math.toRadians(315))
                 .waitSeconds(scoreTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(open);
@@ -238,8 +238,8 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to pick 4th cone off stack
                 .setReversed(true)
-                .splineTo(new Vector2d(24, -12), Math.toRadians(0))
-                .splineTo(new Vector2d(62, -12), Math.toRadians(0))
+                .splineTo(new Vector2d(-24, -12), Math.toRadians(180))
+                .splineTo(new Vector2d(-62, -12), Math.toRadians(180))
                 .waitSeconds(stackTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(closed);
@@ -255,8 +255,8 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to score 4th cone off stack on medium
                 .setReversed(false)
-                .splineTo(new Vector2d(48, -12), Math.toRadians(180))
-                .splineTo(new Vector2d(30, -18), Math.toRadians(225))
+                .splineTo(new Vector2d(-48, -12), Math.toRadians(0))
+                .splineTo(new Vector2d(-30, -18), Math.toRadians(315))
                 .waitSeconds(scoreTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(open);
@@ -268,8 +268,8 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to pick 5th cone off stack
                 .setReversed(true)
-                .splineTo(new Vector2d(48, -12), Math.toRadians(0))
-                .splineTo(new Vector2d(62, -12), Math.toRadians(0))
+                .splineTo(new Vector2d(-48, -12), Math.toRadians(180))
+                .splineTo(new Vector2d(-62, -12), Math.toRadians(180))
                 .waitSeconds(stackTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(closed);
@@ -285,8 +285,8 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to score 5th cone off stack on high
                 .setReversed(false)
-                .splineTo(new Vector2d(48, -12), Math.toRadians(180))
-                .splineTo(new Vector2d(30, -6), Math.toRadians(135))
+                .splineTo(new Vector2d(-48, -12), Math.toRadians(0))
+                .splineTo(new Vector2d(-30, -6), Math.toRadians(45))
                 .waitSeconds(scoreTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(open);
@@ -298,11 +298,11 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to park
                 .setReversed(true)
-                .splineTo(new Vector2d(36, -24), Math.toRadians(270))
+                .splineTo(new Vector2d(-36, -24), Math.toRadians(270))
 
                 // Parking spot 1
-                .splineTo(new Vector2d(24, -36), Math.toRadians(180))
-                .splineTo(new Vector2d(12, -36), Math.toRadians(270))
+                .splineTo(new Vector2d(-48, -36), Math.toRadians(180))
+                .splineTo(new Vector2d(-60, -36), Math.toRadians(270))
                 .build();
 
         TrajectorySequence parkingTwo = drive.trajectorySequenceBuilder(startPose)
@@ -311,7 +311,7 @@ public class AprilTagRIGHT extends LinearOpMode
                 })
 
                 // Go to score preload on low
-                .splineTo(new Vector2d(30, -54), Math.toRadians(135))
+                .splineTo(new Vector2d(-30, -54), Math.toRadians(45))
                 .waitSeconds(scoreTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(open);
@@ -323,10 +323,10 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to pick 1st cone off stack
                 .setReversed(true)
-                .splineTo(new Vector2d(36, -36), Math.toRadians(90))
-                .splineTo(new Vector2d(36, -24), Math.toRadians(90))
-                .splineTo(new Vector2d(48, -12), Math.toRadians(0))
-                .splineTo(new Vector2d(62, -12), Math.toRadians(0))
+                .splineTo(new Vector2d(-36, -36), Math.toRadians(90))
+                .splineTo(new Vector2d(-36, -24), Math.toRadians(90))
+                .splineTo(new Vector2d(-48, -12), Math.toRadians(180))
+                .splineTo(new Vector2d(-62, -12), Math.toRadians(180))
                 .waitSeconds(stackTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(closed);
@@ -342,8 +342,8 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to score 1st cone off stack on high
                 .setReversed(false)
-                .splineTo(new Vector2d(24, -12), Math.toRadians(180))
-                .splineTo(new Vector2d(6, -18), Math.toRadians(225))
+                .splineTo(new Vector2d(-24, -12), Math.toRadians(0))
+                .splineTo(new Vector2d(-6, -18), Math.toRadians(315))
                 .waitSeconds(scoreTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(open);
@@ -355,8 +355,8 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to pick 2nd cone off stack
                 .setReversed(true)
-                .splineTo(new Vector2d(24, -12), Math.toRadians(0))
-                .splineTo(new Vector2d(62, -12), Math.toRadians(0))
+                .splineTo(new Vector2d(-24, -12), Math.toRadians(180))
+                .splineTo(new Vector2d(-62, -12), Math.toRadians(180))
                 .waitSeconds(stackTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(closed);
@@ -372,7 +372,7 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to score 2nd cone off stack on low
                 .setReversed(false)
-                .splineTo(new Vector2d(54, -18), Math.toRadians(225))
+                .splineTo(new Vector2d(-54, -18), Math.toRadians(315))
                 .waitSeconds(scoreTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(open);
@@ -384,7 +384,7 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to pick 3rd cone off stack
                 .setReversed(true)
-                .splineTo(new Vector2d(62, -12), Math.toRadians(0))
+                .splineTo(new Vector2d(-62, -12), Math.toRadians(180))
                 .waitSeconds(stackTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(closed);
@@ -400,8 +400,8 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to score 3rd cone off stack on high
                 .setReversed(false)
-                .splineTo(new Vector2d(24, -12), Math.toRadians(180))
-                .splineTo(new Vector2d(6, -18), Math.toRadians(225))
+                .splineTo(new Vector2d(-24, -12), Math.toRadians(0))
+                .splineTo(new Vector2d(-6, -18), Math.toRadians(315))
                 .waitSeconds(scoreTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(open);
@@ -413,8 +413,8 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to pick 4th cone off stack
                 .setReversed(true)
-                .splineTo(new Vector2d(24, -12), Math.toRadians(0))
-                .splineTo(new Vector2d(62, -12), Math.toRadians(0))
+                .splineTo(new Vector2d(-24, -12), Math.toRadians(180))
+                .splineTo(new Vector2d(-62, -12), Math.toRadians(180))
                 .waitSeconds(stackTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(closed);
@@ -430,8 +430,8 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to score 4th cone off stack on medium
                 .setReversed(false)
-                .splineTo(new Vector2d(48, -12), Math.toRadians(180))
-                .splineTo(new Vector2d(30, -18), Math.toRadians(225))
+                .splineTo(new Vector2d(-48, -12), Math.toRadians(0))
+                .splineTo(new Vector2d(-30, -18), Math.toRadians(315))
                 .waitSeconds(scoreTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(open);
@@ -443,8 +443,8 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to pick 5th cone off stack
                 .setReversed(true)
-                .splineTo(new Vector2d(48, -12), Math.toRadians(0))
-                .splineTo(new Vector2d(62, -12), Math.toRadians(0))
+                .splineTo(new Vector2d(-48, -12), Math.toRadians(180))
+                .splineTo(new Vector2d(-62, -12), Math.toRadians(180))
                 .waitSeconds(stackTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(closed);
@@ -460,8 +460,8 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to score 5th cone off stack on high
                 .setReversed(false)
-                .splineTo(new Vector2d(48, -12), Math.toRadians(180))
-                .splineTo(new Vector2d(30, -6), Math.toRadians(135))
+                .splineTo(new Vector2d(-48, -12), Math.toRadians(0))
+                .splineTo(new Vector2d(-30, -6), Math.toRadians(45))
                 .waitSeconds(scoreTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(open);
@@ -473,10 +473,10 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to park
                 .setReversed(true)
-                .splineTo(new Vector2d(36, -24), Math.toRadians(270))
+                .splineTo(new Vector2d(-36, -24), Math.toRadians(270))
 
                 // Parking spot 2
-                .splineTo(new Vector2d(36, -36), Math.toRadians(270))
+                .splineTo(new Vector2d(-36, -36), Math.toRadians(270))
                 .build();
 
         TrajectorySequence parkingThree = drive.trajectorySequenceBuilder(startPose)
@@ -485,7 +485,7 @@ public class AprilTagRIGHT extends LinearOpMode
                 })
 
                 // Go to score preload on low
-                .splineTo(new Vector2d(30, -54), Math.toRadians(135))
+                .splineTo(new Vector2d(-30, -54), Math.toRadians(45))
                 .waitSeconds(scoreTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(open);
@@ -497,10 +497,10 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to pick 1st cone off stack
                 .setReversed(true)
-                .splineTo(new Vector2d(36, -36), Math.toRadians(90))
-                .splineTo(new Vector2d(36, -24), Math.toRadians(90))
-                .splineTo(new Vector2d(48, -12), Math.toRadians(0))
-                .splineTo(new Vector2d(62, -12), Math.toRadians(0))
+                .splineTo(new Vector2d(-36, -36), Math.toRadians(90))
+                .splineTo(new Vector2d(-36, -24), Math.toRadians(90))
+                .splineTo(new Vector2d(-48, -12), Math.toRadians(180))
+                .splineTo(new Vector2d(-62, -12), Math.toRadians(180))
                 .waitSeconds(stackTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(closed);
@@ -516,8 +516,8 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to score 1st cone off stack on high
                 .setReversed(false)
-                .splineTo(new Vector2d(24, -12), Math.toRadians(180))
-                .splineTo(new Vector2d(6, -18), Math.toRadians(225))
+                .splineTo(new Vector2d(-24, -12), Math.toRadians(0))
+                .splineTo(new Vector2d(-6, -18), Math.toRadians(315))
                 .waitSeconds(scoreTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(open);
@@ -529,8 +529,8 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to pick 2nd cone off stack
                 .setReversed(true)
-                .splineTo(new Vector2d(24, -12), Math.toRadians(0))
-                .splineTo(new Vector2d(62, -12), Math.toRadians(0))
+                .splineTo(new Vector2d(-24, -12), Math.toRadians(180))
+                .splineTo(new Vector2d(-62, -12), Math.toRadians(180))
                 .waitSeconds(stackTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(closed);
@@ -546,7 +546,7 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to score 2nd cone off stack on low
                 .setReversed(false)
-                .splineTo(new Vector2d(54, -18), Math.toRadians(225))
+                .splineTo(new Vector2d(-54, -18), Math.toRadians(315))
                 .waitSeconds(scoreTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(open);
@@ -558,7 +558,7 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to pick 3rd cone off stack
                 .setReversed(true)
-                .splineTo(new Vector2d(62, -12), Math.toRadians(0))
+                .splineTo(new Vector2d(-62, -12), Math.toRadians(180))
                 .waitSeconds(stackTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(closed);
@@ -574,8 +574,8 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to score 3rd cone off stack on high
                 .setReversed(false)
-                .splineTo(new Vector2d(24, -12), Math.toRadians(180))
-                .splineTo(new Vector2d(6, -18), Math.toRadians(225))
+                .splineTo(new Vector2d(-24, -12), Math.toRadians(0))
+                .splineTo(new Vector2d(-6, -18), Math.toRadians(315))
                 .waitSeconds(scoreTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(open);
@@ -587,8 +587,8 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to pick 4th cone off stack
                 .setReversed(true)
-                .splineTo(new Vector2d(24, -12), Math.toRadians(0))
-                .splineTo(new Vector2d(62, -12), Math.toRadians(0))
+                .splineTo(new Vector2d(-24, -12), Math.toRadians(180))
+                .splineTo(new Vector2d(-62, -12), Math.toRadians(180))
                 .waitSeconds(stackTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(closed);
@@ -604,8 +604,8 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to score 4th cone off stack on medium
                 .setReversed(false)
-                .splineTo(new Vector2d(48, -12), Math.toRadians(180))
-                .splineTo(new Vector2d(30, -18), Math.toRadians(225))
+                .splineTo(new Vector2d(-48, -12), Math.toRadians(0))
+                .splineTo(new Vector2d(-30, -18), Math.toRadians(315))
                 .waitSeconds(scoreTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(open);
@@ -617,8 +617,8 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to pick 5th cone off stack
                 .setReversed(true)
-                .splineTo(new Vector2d(48, -12), Math.toRadians(0))
-                .splineTo(new Vector2d(62, -12), Math.toRadians(0))
+                .splineTo(new Vector2d(-48, -12), Math.toRadians(180))
+                .splineTo(new Vector2d(-62, -12), Math.toRadians(180))
                 .waitSeconds(stackTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(closed);
@@ -634,8 +634,8 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to score 5th cone off stack on high
                 .setReversed(false)
-                .splineTo(new Vector2d(48, -12), Math.toRadians(180))
-                .splineTo(new Vector2d(30, -6), Math.toRadians(135))
+                .splineTo(new Vector2d(-48, -12), Math.toRadians(0))
+                .splineTo(new Vector2d(-30, -6), Math.toRadians(45))
                 .waitSeconds(scoreTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(open);
@@ -647,11 +647,11 @@ public class AprilTagRIGHT extends LinearOpMode
 
                 // Go to park
                 .setReversed(true)
-                .splineTo(new Vector2d(36, -24), Math.toRadians(270))
+                .splineTo(new Vector2d(-36, -24), Math.toRadians(270))
 
                 // Parking spot 3
-                .splineTo(new Vector2d(48, -36), Math.toRadians(0))
-                .splineTo(new Vector2d(60, -36), Math.toRadians(270))
+                .splineTo(new Vector2d(-24, -36), Math.toRadians(0))
+                .splineTo(new Vector2d(-12, -36), Math.toRadians(270))
                 .build();
 
         //drive.followTrajectorySequenceAsync(trajSeq);
