@@ -103,7 +103,7 @@ public class AprilTagLeftMecanum extends LinearOpMode
         DcMotor liftMotorLeft = hardwareMap.dcMotor.get("liftMotorLeft");
         DcMotor liftMotorRight = hardwareMap.dcMotor.get("liftMotorRight");
 
-        liftMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        liftMotorRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
