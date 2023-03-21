@@ -179,10 +179,10 @@ public class RobotCentricMecanum extends LinearOpMode {
             leftCommand = Range.clip(leftCommand, -1, 1);
             rightCommand = Range.clip(rightCommand, -1, 1);
             // Assign PID output
-            dashboardTelemetry.addData("Command", leftCommand);
-            dashboardTelemetry.addData("Command", rightCommand);
+            dashboardTelemetry.addData("Command Left", leftCommand);
+            dashboardTelemetry.addData("Command Right", rightCommand);
             liftMotorLeft.setPower(leftCommand);
-            liftMotorLeft.setPower(rightCommand);
+            liftMotorRight.setPower(rightCommand);
 
             double y = -gamepad1.left_stick_y * multiplier; // Remember, this is reversed!
             double x = gamepad1.left_stick_x * 1.1 * multiplier; // Counteract imperfect strafing

@@ -29,7 +29,7 @@ import java.util.ArrayList;
 
 // Credit: OpenFTC for a lot
 @Config
-@Autonomous(name="1+5 LEFT SIDE")
+@Autonomous(name="1+5 LEFT SIDE TANK")
 public class AprilTagLeftTank extends LinearOpMode
 {
     public static double Kp = 0.005, Ki = 0, Kd = 0;
@@ -763,10 +763,10 @@ public class AprilTagLeftTank extends LinearOpMode
             leftCommand = Range.clip(leftCommand, -1, 1);
             rightCommand = Range.clip(rightCommand, -1, 1);
             // Assign PID output
-            dashboardTelemetry.addData("Command", leftCommand);
-            dashboardTelemetry.addData("Command", rightCommand);
+            dashboardTelemetry.addData("Command Left", leftCommand);
+            dashboardTelemetry.addData("Command Right", rightCommand);
             liftMotorLeft.setPower(leftCommand);
-            liftMotorLeft.setPower(rightCommand);
+            liftMotorRight.setPower(rightCommand);
 
         }
         //endregion
