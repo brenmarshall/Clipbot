@@ -59,10 +59,10 @@ public class RobotCentricTank extends LinearOpMode {
         DcMotor liftMotorLeft = hardwareMap.dcMotor.get("liftMotorLeft");
         DcMotor liftMotorRight = hardwareMap.dcMotor.get("liftMotorRight");
 
-        //DcMotor driveMotorLeft = hardwareMap.dcMotor.get("driveMotorLeft");
-        //DcMotor driveMotorRight = hardwareMap.dcMotor.get("driveMotorRight");
+        DcMotor driveMotorLeft = hardwareMap.dcMotor.get("driveMotorLeft");
+        DcMotor driveMotorRight = hardwareMap.dcMotor.get("driveMotorRight");
 
-        //driveMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        driveMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         liftMotorRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         //clawSensor = hardwareMap.get(NormalizedColorSensor.class, "clawSensor");
@@ -169,7 +169,7 @@ public class RobotCentricTank extends LinearOpMode {
                 targetInches = stackHeight;
             }
 
-            int targetPosition = (int)(targetInches * 30.72);
+            int targetPosition = (int)(targetInches * 30.71283);
             // Update pid controller
             double leftCommand = control.update(targetPosition, liftMotorLeft.getCurrentPosition());
             double rightCommand = control.update(targetPosition, liftMotorRight.getCurrentPosition());
@@ -187,8 +187,8 @@ public class RobotCentricTank extends LinearOpMode {
             float rotatePower = gamepad1.right_stick_x;
 
             // Flip these signs if the robot rotates the wrong way
-            //driveMotorLeft.setPower((drivePower + rotatePower) * multiplier);
-            //driveMotorRight.setPower((drivePower - rotatePower) * multiplier);
+            driveMotorLeft.setPower((drivePower + rotatePower) * multiplier);
+            driveMotorRight.setPower((drivePower - rotatePower) * multiplier);
 
             telemetry.update();
             dashboardTelemetry.update();

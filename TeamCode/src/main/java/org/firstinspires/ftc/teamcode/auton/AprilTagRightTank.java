@@ -756,7 +756,7 @@ public class AprilTagRightTank extends LinearOpMode
         while(opModeIsActive()) {
             drive.update();
 
-            int targetPosition = (int)(targetInches * 30.72);
+            int targetPosition = (int)(targetInches * 30.71283);
             // Update pid controller
             double leftCommand = control.update(targetPosition, liftMotorLeft.getCurrentPosition());
             double rightCommand = control.update(targetPosition, liftMotorRight.getCurrentPosition());

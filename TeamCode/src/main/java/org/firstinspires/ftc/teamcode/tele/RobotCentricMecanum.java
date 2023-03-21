@@ -66,7 +66,7 @@ public class RobotCentricMecanum extends LinearOpMode {
         // Reverse the motors
         motorFrontRight.setDirection(DcMotorSimple.Direction.REVERSE);
         motorBackRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        liftMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        liftMotorRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         clawSensor = hardwareMap.get(NormalizedColorSensor.class, "clawSensor");
         guideSensor = hardwareMap.get(NormalizedColorSensor.class, "guideSensor");
@@ -172,7 +172,7 @@ public class RobotCentricMecanum extends LinearOpMode {
                 targetInches = stackHeight;
             }
 
-            int targetPosition = (int)(targetInches * 30.72);
+            int targetPosition = (int)(targetInches * 30.71283);
             // Update pid controller
             double leftCommand = control.update(targetPosition, liftMotorLeft.getCurrentPosition());
             double rightCommand = control.update(targetPosition, liftMotorRight.getCurrentPosition());
