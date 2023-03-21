@@ -197,7 +197,7 @@ public class AprilTagRightMecanum extends LinearOpMode
 
                 // Go to score 2nd cone off stack on low
                 .setReversed(false)
-                .splineTo(new Vector2d(54, -18), Math.toRadians(225))
+                .splineTo(new Vector2d(54, -18), Math.toRadians(235))
                 .waitSeconds(scoreTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(open);
@@ -301,8 +301,8 @@ public class AprilTagRightMecanum extends LinearOpMode
                 .splineTo(new Vector2d(36, -24), Math.toRadians(270))
 
                 // Parking spot 1
-                .splineTo(new Vector2d(24, -36), Math.toRadians(180))
-                .splineTo(new Vector2d(12, -36), Math.toRadians(270))
+                .splineToConstantHeading(new Vector2d(24, -36), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(12, -36), Math.toRadians(180))
                 .build();
 
         TrajectorySequence parkingTwo = drive.trajectorySequenceBuilder(startPose)
@@ -372,7 +372,7 @@ public class AprilTagRightMecanum extends LinearOpMode
 
                 // Go to score 2nd cone off stack on low
                 .setReversed(false)
-                .splineTo(new Vector2d(54, -18), Math.toRadians(225))
+                .splineTo(new Vector2d(54, -18), Math.toRadians(235))
                 .waitSeconds(scoreTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(open);
@@ -546,7 +546,7 @@ public class AprilTagRightMecanum extends LinearOpMode
 
                 // Go to score 2nd cone off stack on low
                 .setReversed(false)
-                .splineTo(new Vector2d(54, -18), Math.toRadians(225))
+                .splineTo(new Vector2d(54, -18), Math.toRadians(235))
                 .waitSeconds(scoreTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(open);
@@ -650,8 +650,8 @@ public class AprilTagRightMecanum extends LinearOpMode
                 .splineTo(new Vector2d(36, -24), Math.toRadians(270))
 
                 // Parking spot 3
-                .splineTo(new Vector2d(48, -36), Math.toRadians(0))
-                .splineTo(new Vector2d(60, -36), Math.toRadians(270))
+                .splineToConstantHeading(new Vector2d(48, -36), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(60, -36), Math.toRadians(0))
                 .build();
 
         //drive.followTrajectorySequenceAsync(trajSeq);

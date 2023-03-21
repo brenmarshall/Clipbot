@@ -197,7 +197,7 @@ public class AprilTagLeftTank extends LinearOpMode
 
                 // Go to score 2nd cone off stack on low
                 .setReversed(false)
-                .splineTo(new Vector2d(-54, -18), Math.toRadians(315))
+                .splineTo(new Vector2d(-54, -18), Math.toRadians(305))
                 .waitSeconds(scoreTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(open);
@@ -372,7 +372,7 @@ public class AprilTagLeftTank extends LinearOpMode
 
                 // Go to score 2nd cone off stack on low
                 .setReversed(false)
-                .splineTo(new Vector2d(-54, -18), Math.toRadians(315))
+                .splineTo(new Vector2d(-54, -18), Math.toRadians(305))
                 .waitSeconds(scoreTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(open);
@@ -546,7 +546,7 @@ public class AprilTagLeftTank extends LinearOpMode
 
                 // Go to score 2nd cone off stack on low
                 .setReversed(false)
-                .splineTo(new Vector2d(-54, -18), Math.toRadians(315))
+                .splineTo(new Vector2d(-54, -18), Math.toRadians(305))
                 .waitSeconds(scoreTime1)
                 .addTemporalMarker(() -> {
                     gripServo.setPosition(open);
