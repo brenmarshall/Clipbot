@@ -30,10 +30,10 @@ public class RobotCentricMecanum extends LinearOpMode {
     double multiplier = 1.0;
     double stackHeight = 0.0;
 
-    NormalizedColorSensor clawSensor;
-    NormalizedColorSensor guideSensor;
-    DistanceSensor clawDistanceSensor;
-    DistanceSensor guideDistanceSensor;
+    //NormalizedColorSensor clawSensor;
+    //NormalizedColorSensor guideSensor;
+    //DistanceSensor clawDistanceSensor;
+    //DistanceSensor guideDistanceSensor;
 
     FtcDashboard dashboard = FtcDashboard.getInstance();
     Telemetry dashboardTelemetry = dashboard.getTelemetry();
@@ -48,16 +48,16 @@ public class RobotCentricMecanum extends LinearOpMode {
         TelemetryPacket packet = new TelemetryPacket();
 
         // Servo
-        Servo gripServo = hardwareMap.servo.get("manipulator");
-        Servo leftV4B = hardwareMap.servo.get("leftV4B");
-        Servo rightV4B = hardwareMap.servo.get("rightV4B");
-        Servo leftGuide = hardwareMap.servo.get("leftGuide");
-        Servo rightGuide = hardwareMap.servo.get("rightGuide");
+        //Servo gripServo = hardwareMap.servo.get("manipulator");
+        //Servo leftV4B = hardwareMap.servo.get("leftV4B");
+        //Servo rightV4B = hardwareMap.servo.get("rightV4B");
+        //Servo leftGuide = hardwareMap.servo.get("leftGuide");
+        //Servo rightGuide = hardwareMap.servo.get("rightGuide");
 
         // Declare our motors
         // Make sure your ID's match your configuration
-        DcMotor liftMotorLeft = hardwareMap.dcMotor.get("liftMotorLeft");
-        DcMotor liftMotorRight = hardwareMap.dcMotor.get("liftMotorRight");
+        //DcMotor liftMotorLeft = hardwareMap.dcMotor.get("liftMotorLeft");
+        //DcMotor liftMotorRight = hardwareMap.dcMotor.get("liftMotorRight");
         DcMotor motorFrontLeft = hardwareMap.dcMotor.get("motorFrontLeft");
         DcMotor motorBackLeft = hardwareMap.dcMotor.get("motorBackLeft");
         DcMotor motorFrontRight = hardwareMap.dcMotor.get("motorFrontRight");
@@ -66,12 +66,12 @@ public class RobotCentricMecanum extends LinearOpMode {
         // Reverse the motors
         motorFrontRight.setDirection(DcMotorSimple.Direction.REVERSE);
         motorBackRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        liftMotorRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        //liftMotorRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        clawSensor = hardwareMap.get(NormalizedColorSensor.class, "clawSensor");
-        guideSensor = hardwareMap.get(NormalizedColorSensor.class, "guideSensor");
-        clawDistanceSensor = hardwareMap.get(DistanceSensor.class, "clawSensor");
-        guideDistanceSensor = hardwareMap.get(DistanceSensor.class, "guideSensor");
+        //clawSensor = hardwareMap.get(NormalizedColorSensor.class, "clawSensor");
+        //guideSensor = hardwareMap.get(NormalizedColorSensor.class, "guideSensor");
+        //clawDistanceSensor = hardwareMap.get(DistanceSensor.class, "clawSensor");
+        //guideDistanceSensor = hardwareMap.get(DistanceSensor.class, "guideSensor");
 
         telemetry.addLine("Ready");
         telemetry.update();
@@ -81,6 +81,7 @@ public class RobotCentricMecanum extends LinearOpMode {
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
+            /*
             NormalizedRGBA clawColors = clawSensor.getNormalizedColors();
             NormalizedRGBA guideColors = guideSensor.getNormalizedColors();
             double clawDistance = clawDistanceSensor.getDistance(DistanceUnit.MM);
@@ -183,6 +184,7 @@ public class RobotCentricMecanum extends LinearOpMode {
             dashboardTelemetry.addData("Command Right", rightCommand);
             liftMotorLeft.setPower(leftCommand);
             liftMotorRight.setPower(rightCommand);
+             */
 
             double y = -gamepad1.left_stick_y * multiplier; // Remember, this is reversed!
             double x = gamepad1.left_stick_x * 1.1 * multiplier; // Counteract imperfect strafing
