@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 
-@TeleOp(name="FieldCentric")
+@TeleOp(name="FieldCentricMecanum")
 public class FieldCentricMecanum extends LinearOpMode {
 
     double multiplier = 1.0;
@@ -71,10 +71,10 @@ public class FieldCentricMecanum extends LinearOpMode {
 
             double denominator = Math.max(Math.abs(roty) + Math.abs(rotx) + Math.abs(rx), 1);
 
-            double frontRightPower = (roty + rotx + rx) / denominator;
-            double backRightPower = (roty - rotx + rx) / denominator;
-            double frontLeftPower = (roty - rotx - rx) / denominator;
-            double backLeftPower = (roty + rotx - rx) / denominator;
+            double frontRightPower = (roty - rotx - rx) / denominator;
+            double backRightPower = (roty + rotx - rx) / denominator;
+            double frontLeftPower = (roty + rotx + rx) / denominator;
+            double backLeftPower = (roty - rotx + rx) / denominator;
 
 
             packet.put("frontLeftPower", frontLeftPower);
