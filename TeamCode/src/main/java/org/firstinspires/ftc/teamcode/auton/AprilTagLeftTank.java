@@ -108,12 +108,6 @@ public class AprilTagLeftTank extends LinearOpMode
 
         liftMotorRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        liftMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        liftMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        liftMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);

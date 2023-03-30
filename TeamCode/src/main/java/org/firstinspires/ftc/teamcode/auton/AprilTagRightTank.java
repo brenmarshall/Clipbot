@@ -100,6 +100,12 @@ public class AprilTagRightTank extends LinearOpMode
         DcMotor liftMotorLeft = hardwareMap.dcMotor.get("liftMotorLeft");
         DcMotor liftMotorRight = hardwareMap.dcMotor.get("liftMotorRight");
 
+        liftMotorLeft.setTargetPosition(0);
+        liftMotorRight.setTargetPosition(0);
+
+        liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
         liftMotorRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
