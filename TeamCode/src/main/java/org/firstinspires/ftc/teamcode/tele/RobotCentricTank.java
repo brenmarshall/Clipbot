@@ -38,8 +38,6 @@ public class RobotCentricTank extends LinearOpMode {
     FtcDashboard dashboard = FtcDashboard.getInstance();
     Telemetry dashboardTelemetry = dashboard.getTelemetry();
 
-    PIDController control = new PIDController(Kp, Ki, Kd, dashboardTelemetry);
-
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -56,19 +54,25 @@ public class RobotCentricTank extends LinearOpMode {
 
         // Declare our motors
         // Make sure your ID's match your configuration
+        DcMotor driveMotorLeft = hardwareMap.dcMotor.get("driveMotorLeft");
+        DcMotor driveMotorRight = hardwareMap.dcMotor.get("driveMotorRight");
         DcMotor liftMotorLeft = hardwareMap.dcMotor.get("liftMotorLeft");
         DcMotor liftMotorRight = hardwareMap.dcMotor.get("liftMotorRight");
 
         liftMotorLeft.setTargetPosition(0);
         liftMotorRight.setTargetPosition(0);
+
         liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        DcMotor driveMotorLeft = hardwareMap.dcMotor.get("driveMotorLeft");
-        DcMotor driveMotorRight = hardwareMap.dcMotor.get("driveMotorRight");
-
-        driveMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        driveMotorRight.setDirection(DcMotorSimple.Direction.REVERSE);
         liftMotorRight.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        liftMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        liftMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //clawSensor = hardwareMap.get(NormalizedColorSensor.class, "clawSensor");
         //guideSensor = hardwareMap.get(NormalizedColorSensor.class, "guideSensor");
@@ -103,7 +107,7 @@ public class RobotCentricTank extends LinearOpMode {
                 //targetInches = targetInches - 1;
             //}
 
-            if(gamepad1.left_trigger > 0.2) {
+            if(gamepad1.left_trigger > 0.2 || gamepad1.right_trigger > 0.2) {
                 multiplier = 0.5;
             }
             else if(position < 12) {
@@ -114,20 +118,26 @@ public class RobotCentricTank extends LinearOpMode {
             }
 
             // Release cone
-            //if (gamepad1.x) {
-                //if (targetInches >= 1) {
-                    //targetInches = targetInches - 1;
+            if (gamepad1.x) {
+                if (position >= 1) {
+                    liftMotorLeft.setTargetPosition((int) position - 1);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) position - 1);
+                    liftMotorRight.setPower(1.0);
                     //gripServo.setPosition(open);
                     //leftV4B.setPosition(0.0);
                     //rightV4B.setPosition(0.83);
                     //leftGuide.setPosition(0.0);
                     //rightGuide.setPosition(0.3);
-                    //targetInches = 0.0;
-                //}
+                    liftMotorLeft.setTargetPosition(0);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition(0);
+                    liftMotorRight.setPower(1.0);
+                }
                 //else {
                     //gripServo.setPosition(open);
                 //}
-            //}
+            }
             // Manual claw
             //if (gamepad1.dpad_right) {
                 //gripServo.setPosition(closed);
@@ -149,7 +159,6 @@ public class RobotCentricTank extends LinearOpMode {
                 liftMotorRight.setTargetPosition((int) high);
                 liftMotorRight.setPower(1.0);
                 //gripServo.setPosition(closed);
-                //targetInches = high;
                 //leftV4B.setPosition(0.83);
                 //rightV4B.setPosition(0.0);
                 //leftGuide.setPosition(0.0);
@@ -161,7 +170,6 @@ public class RobotCentricTank extends LinearOpMode {
                 liftMotorRight.setTargetPosition((int) medium);
                 liftMotorRight.setPower(1.0);
                 //gripServo.setPosition(closed);
-                //targetInches = medium;
                 //leftV4B.setPosition(0.83);
                 //rightV4B.setPosition(0.0);
                 //leftGuide.setPosition(0.0);
