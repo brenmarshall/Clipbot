@@ -14,14 +14,11 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.util.PIDController;
 
 // Warning: this code is garbage and nobody knows how it works :D
 @TeleOp(name="RobotCentricTank")
 public class RobotCentricTank extends LinearOpMode {
 
-    public static double Kp = 0.05, Ki = 0.0, Kd = 0.0;
-    public static double targetInches = 0.0;
     public static double low = 1.0 * 30.71283;
     public static double medium = 11.0 * 30.71283;
     public static double high = 21.0 * 30.71283;
@@ -154,33 +151,33 @@ public class RobotCentricTank extends LinearOpMode {
 
             // Auto heights
             if (gamepad1.y) {
+                //gripServo.setPosition(closed);
                 liftMotorLeft.setTargetPosition((int) high);
                 liftMotorLeft.setPower(1.0);
                 liftMotorRight.setTargetPosition((int) high);
                 liftMotorRight.setPower(1.0);
-                //gripServo.setPosition(closed);
                 //leftV4B.setPosition(0.83);
                 //rightV4B.setPosition(0.0);
                 //leftGuide.setPosition(0.0);
                 //rightGuide.setPosition(0.3);
             }
             else if (gamepad1.b) {
+                //gripServo.setPosition(closed);
                 liftMotorLeft.setTargetPosition((int) medium);
                 liftMotorLeft.setPower(1.0);
                 liftMotorRight.setTargetPosition((int) medium);
                 liftMotorRight.setPower(1.0);
-                //gripServo.setPosition(closed);
                 //leftV4B.setPosition(0.83);
                 //rightV4B.setPosition(0.0);
                 //leftGuide.setPosition(0.0);
                 //rightGuide.setPosition(0.3);
             }
             else if (gamepad1.a) {
+                //gripServo.setPosition(closed);
                 liftMotorLeft.setTargetPosition((int) low);
                 liftMotorLeft.setPower(1.0);
                 liftMotorRight.setTargetPosition((int) low);
                 liftMotorRight.setPower(1.0);
-                //gripServo.setPosition(closed);
                 //leftV4B.setPosition(0.83);
                 //rightV4B.setPosition(0.0);
                 //leftGuide.setPosition(0.0);
@@ -191,7 +188,6 @@ public class RobotCentricTank extends LinearOpMode {
                 liftMotorLeft.setPower(1.0);
                 liftMotorRight.setTargetPosition(0);
                 liftMotorRight.setPower(1.0);
-                //gripServo.setPosition(open);
                 //leftV4B.setPosition(0.0);
                 //rightV4B.setPosition(0.83);
                 //leftGuide.setPosition(0.3);
