@@ -40,6 +40,7 @@ public class AprilTagLeftTank extends LinearOpMode
     public static double stack3 = 2 * 30.71283;
     public static double stack4 = 1 * 30.71283;
     public static double stack5 = 0 * 30.71283;
+    public static double stackLift = 5 * 30.71283;
     public static double stackTime1 = 0.25;
     public static double stackTime2 = 0.25;
     public static double stackTime3 = 0.25;
@@ -96,8 +97,6 @@ public class AprilTagLeftTank extends LinearOpMode
 
         // Declare our motors
         // Make sure your ID's match your configuration
-        DcMotor driveMotorLeft = hardwareMap.dcMotor.get("driveMotorLeft");
-        DcMotor driveMotorRight = hardwareMap.dcMotor.get("driveMotorRight");
         DcMotor liftMotorLeft = hardwareMap.dcMotor.get("liftMotorLeft");
         DcMotor liftMotorRight = hardwareMap.dcMotor.get("liftMotorRight");
 
@@ -107,7 +106,6 @@ public class AprilTagLeftTank extends LinearOpMode
         liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        driveMotorRight.setDirection(DcMotorSimple.Direction.REVERSE);
         liftMotorRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         liftMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -146,7 +144,8 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setTargetPosition((int) low);
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) low);
-                    liftMotorRight.setPower(1.0);                })
+                    liftMotorRight.setPower(1.0);
+                })
 
                 // Go to score preload on low
                 .splineTo(new Vector2d(-30, -54), Math.toRadians(45))
@@ -174,9 +173,9 @@ public class AprilTagLeftTank extends LinearOpMode
                 })
                 .waitSeconds(stackTime2)
                 .addTemporalMarker(() -> {
-                    liftMotorLeft.setTargetPosition((int) stack1 + 5);
+                    liftMotorLeft.setTargetPosition((int) (stack1 + stackLift));
                     liftMotorLeft.setPower(1.0);
-                    liftMotorRight.setTargetPosition((int) stack1 + 5);
+                    liftMotorRight.setTargetPosition((int) (stack1 + stackLift));
                     liftMotorRight.setPower(1.0);
                 })
                 .waitSeconds(stackTime3)
@@ -213,9 +212,9 @@ public class AprilTagLeftTank extends LinearOpMode
                 })
                 .waitSeconds(stackTime2)
                 .addTemporalMarker(() -> {
-                    liftMotorLeft.setTargetPosition((int) stack2 + 5);
+                    liftMotorLeft.setTargetPosition((int) (stack2 + stackLift));
                     liftMotorLeft.setPower(1.0);
-                    liftMotorRight.setTargetPosition((int) stack2 + 5);
+                    liftMotorRight.setTargetPosition((int) (stack2 + stackLift));
                     liftMotorRight.setPower(1.0);
                 })
                 .waitSeconds(stackTime3)
@@ -250,9 +249,9 @@ public class AprilTagLeftTank extends LinearOpMode
                 })
                 .waitSeconds(stackTime2)
                 .addTemporalMarker(() -> {
-                    liftMotorLeft.setTargetPosition((int) stack3 + 5);
+                    liftMotorLeft.setTargetPosition((int) (stack3 + stackLift));
                     liftMotorLeft.setPower(1.0);
-                    liftMotorRight.setTargetPosition((int) stack3 + 5);
+                    liftMotorRight.setTargetPosition((int) (stack3 + stackLift));
                     liftMotorRight.setPower(1.0);
                 })
                 .waitSeconds(stackTime3)
@@ -289,9 +288,9 @@ public class AprilTagLeftTank extends LinearOpMode
                 })
                 .waitSeconds(stackTime2)
                 .addTemporalMarker(() -> {
-                    liftMotorLeft.setTargetPosition((int) stack4 + 5);
+                    liftMotorLeft.setTargetPosition((int) (stack4 + stackLift));
                     liftMotorLeft.setPower(1.0);
-                    liftMotorRight.setTargetPosition((int) stack4 + 5);
+                    liftMotorRight.setTargetPosition((int) (stack4 + stackLift));
                     liftMotorRight.setPower(1.0);
                 })
                 .waitSeconds(stackTime3)
@@ -364,7 +363,8 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setTargetPosition((int) low);
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) low);
-                    liftMotorRight.setPower(1.0);                })
+                    liftMotorRight.setPower(1.0);
+                })
 
                 // Go to score preload on low
                 .splineTo(new Vector2d(-30, -54), Math.toRadians(45))
@@ -392,9 +392,9 @@ public class AprilTagLeftTank extends LinearOpMode
                 })
                 .waitSeconds(stackTime2)
                 .addTemporalMarker(() -> {
-                    liftMotorLeft.setTargetPosition((int) stack1 + 5);
+                    liftMotorLeft.setTargetPosition((int) (stack1 + stackLift));
                     liftMotorLeft.setPower(1.0);
-                    liftMotorRight.setTargetPosition((int) stack1 + 5);
+                    liftMotorRight.setTargetPosition((int) (stack1 + stackLift));
                     liftMotorRight.setPower(1.0);
                 })
                 .waitSeconds(stackTime3)
@@ -431,9 +431,9 @@ public class AprilTagLeftTank extends LinearOpMode
                 })
                 .waitSeconds(stackTime2)
                 .addTemporalMarker(() -> {
-                    liftMotorLeft.setTargetPosition((int) stack2 + 5);
+                    liftMotorLeft.setTargetPosition((int) (stack2 + stackLift));
                     liftMotorLeft.setPower(1.0);
-                    liftMotorRight.setTargetPosition((int) stack2 + 5);
+                    liftMotorRight.setTargetPosition((int) (stack2 + stackLift));
                     liftMotorRight.setPower(1.0);
                 })
                 .waitSeconds(stackTime3)
@@ -468,9 +468,9 @@ public class AprilTagLeftTank extends LinearOpMode
                 })
                 .waitSeconds(stackTime2)
                 .addTemporalMarker(() -> {
-                    liftMotorLeft.setTargetPosition((int) stack3 + 5);
+                    liftMotorLeft.setTargetPosition((int) (stack3 + stackLift));
                     liftMotorLeft.setPower(1.0);
-                    liftMotorRight.setTargetPosition((int) stack3 + 5);
+                    liftMotorRight.setTargetPosition((int) (stack3 + stackLift));
                     liftMotorRight.setPower(1.0);
                 })
                 .waitSeconds(stackTime3)
@@ -507,9 +507,9 @@ public class AprilTagLeftTank extends LinearOpMode
                 })
                 .waitSeconds(stackTime2)
                 .addTemporalMarker(() -> {
-                    liftMotorLeft.setTargetPosition((int) stack4 + 5);
+                    liftMotorLeft.setTargetPosition((int) (stack4 + stackLift));
                     liftMotorLeft.setPower(1.0);
-                    liftMotorRight.setTargetPosition((int) stack4 + 5);
+                    liftMotorRight.setTargetPosition((int) (stack4 + stackLift));
                     liftMotorRight.setPower(1.0);
                 })
                 .waitSeconds(stackTime3)
@@ -581,7 +581,8 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setTargetPosition((int) low);
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) low);
-                    liftMotorRight.setPower(1.0);                })
+                    liftMotorRight.setPower(1.0);
+                })
 
                 // Go to score preload on low
                 .splineTo(new Vector2d(-30, -54), Math.toRadians(45))
@@ -609,9 +610,9 @@ public class AprilTagLeftTank extends LinearOpMode
                 })
                 .waitSeconds(stackTime2)
                 .addTemporalMarker(() -> {
-                    liftMotorLeft.setTargetPosition((int) stack1 + 5);
+                    liftMotorLeft.setTargetPosition((int) (stack1 + stackLift));
                     liftMotorLeft.setPower(1.0);
-                    liftMotorRight.setTargetPosition((int) stack1 + 5);
+                    liftMotorRight.setTargetPosition((int) (stack1 + stackLift));
                     liftMotorRight.setPower(1.0);
                 })
                 .waitSeconds(stackTime3)
@@ -648,9 +649,9 @@ public class AprilTagLeftTank extends LinearOpMode
                 })
                 .waitSeconds(stackTime2)
                 .addTemporalMarker(() -> {
-                    liftMotorLeft.setTargetPosition((int) stack2 + 5);
+                    liftMotorLeft.setTargetPosition((int) (stack2 + stackLift));
                     liftMotorLeft.setPower(1.0);
-                    liftMotorRight.setTargetPosition((int) stack2 + 5);
+                    liftMotorRight.setTargetPosition((int) (stack2 + stackLift));
                     liftMotorRight.setPower(1.0);
                 })
                 .waitSeconds(stackTime3)
@@ -685,9 +686,9 @@ public class AprilTagLeftTank extends LinearOpMode
                 })
                 .waitSeconds(stackTime2)
                 .addTemporalMarker(() -> {
-                    liftMotorLeft.setTargetPosition((int) stack3 + 5);
+                    liftMotorLeft.setTargetPosition((int) (stack3 + stackLift));
                     liftMotorLeft.setPower(1.0);
-                    liftMotorRight.setTargetPosition((int) stack3 + 5);
+                    liftMotorRight.setTargetPosition((int) (stack3 + stackLift));
                     liftMotorRight.setPower(1.0);
                 })
                 .waitSeconds(stackTime3)
@@ -724,9 +725,9 @@ public class AprilTagLeftTank extends LinearOpMode
                 })
                 .waitSeconds(stackTime2)
                 .addTemporalMarker(() -> {
-                    liftMotorLeft.setTargetPosition((int) stack4 + 5);
+                    liftMotorLeft.setTargetPosition((int) (stack4 + stackLift));
                     liftMotorLeft.setPower(1.0);
-                    liftMotorRight.setTargetPosition((int) stack4 + 5);
+                    liftMotorRight.setTargetPosition((int) (stack4 + stackLift));
                     liftMotorRight.setPower(1.0);
                 })
                 .waitSeconds(stackTime3)

@@ -32,16 +32,15 @@ import java.util.ArrayList;
 @Autonomous(name="1+5 RIGHT SIDE TANK")
 public class AprilTagRightTank extends LinearOpMode
 {
-    public static double Kp = 0.005, Ki = 0, Kd = 0;
-    public static double targetInches = 0.0;
-    public static double low = 1;
-    public static double medium = 11;
-    public static double high = 21;
-    public static double stack1 = 4;
-    public static double stack2 = 3;
-    public static double stack3 = 2;
-    public static double stack4 = 1;
-    public static double stack5 = 0;
+    public static double low = 1.0 * 30.71283;
+    public static double medium = 11.0 * 30.71283;
+    public static double high = 21.0 * 30.71283;
+    public static double stack1 = 4 * 30.71283;
+    public static double stack2 = 3 * 30.71283;
+    public static double stack3 = 2 * 30.71283;
+    public static double stack4 = 1 * 30.71283;
+    public static double stack5 = 0 * 30.71283;
+    public static double stackLift = 5 * 30.71283;
     public static double stackTime1 = 0.25;
     public static double stackTime2 = 0.25;
     public static double stackTime3 = 0.25;
@@ -52,8 +51,6 @@ public class AprilTagRightTank extends LinearOpMode
 
     FtcDashboard dashboard = FtcDashboard.getInstance();
     Telemetry dashboardTelemetry = dashboard.getTelemetry();
-
-    PIDController control = new PIDController(Kp, Ki, Kd, dashboardTelemetry);
 
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
@@ -132,7 +129,10 @@ public class AprilTagRightTank extends LinearOpMode
 
         TrajectorySequence parkingOne = drive.trajectorySequenceBuilder(startPose)
                 .addTemporalMarker(() -> {
-                    targetInches = low;
+                    liftMotorLeft.setTargetPosition((int) low);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) low);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to score preload on low
@@ -143,7 +143,10 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(scoreTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = stack1;
+                    liftMotorLeft.setTargetPosition((int) stack1);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) stack1);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to pick 1st cone off stack
@@ -158,11 +161,17 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(stackTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = targetInches + 5;
+                    liftMotorLeft.setTargetPosition((int) (stack1 + stackLift));
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) (stack1 + stackLift));
+                    liftMotorRight.setPower(1.0);
                 })
                 .waitSeconds(stackTime3)
                 .addTemporalMarker(() -> {
-                    targetInches = high;
+                    liftMotorLeft.setTargetPosition((int) high);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) high);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to score 1st cone off stack on high
@@ -175,7 +184,10 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(scoreTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = stack2;
+                    liftMotorLeft.setTargetPosition((int) stack2);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) stack2);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to pick 2nd cone off stack
@@ -188,11 +200,17 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(stackTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = targetInches + 5;
+                    liftMotorLeft.setTargetPosition((int) (stack2 + stackLift));
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) (stack2 + stackLift));
+                    liftMotorRight.setPower(1.0);
                 })
                 .waitSeconds(stackTime3)
                 .addTemporalMarker(() -> {
-                    targetInches = low;
+                    liftMotorLeft.setTargetPosition((int) low);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) low);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to score 2nd cone off stack on low
@@ -204,7 +222,10 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(scoreTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = stack3;
+                    liftMotorLeft.setTargetPosition((int) stack3);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) stack3);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to pick 3rd cone off stack
@@ -216,11 +237,17 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(stackTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = targetInches + 5;
+                    liftMotorLeft.setTargetPosition((int) (stack3 + stackLift));
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) (stack3 + stackLift));
+                    liftMotorRight.setPower(1.0);
                 })
                 .waitSeconds(stackTime3)
                 .addTemporalMarker(() -> {
-                    targetInches = high;
+                    liftMotorLeft.setTargetPosition((int) high);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) high);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to score 3rd cone off stack on high
@@ -233,7 +260,10 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(scoreTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = stack4;
+                    liftMotorLeft.setTargetPosition((int) stack4);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) stack4);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to pick 4th cone off stack
@@ -246,11 +276,17 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(stackTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = targetInches + 5;
+                    liftMotorLeft.setTargetPosition((int) (stack4 + stackLift));
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) (stack4 + stackLift));
+                    liftMotorRight.setPower(1.0);
                 })
                 .waitSeconds(stackTime3)
                 .addTemporalMarker(() -> {
-                    targetInches = medium;
+                    liftMotorLeft.setTargetPosition((int) medium);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) medium);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to score 4th cone off stack on medium
@@ -263,7 +299,10 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(scoreTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = stack5;
+                    liftMotorLeft.setTargetPosition((int) stack5);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) stack5);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to pick 5th cone off stack
@@ -276,11 +315,10 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(stackTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = targetInches + 5;
-                })
-                .waitSeconds(stackTime3)
-                .addTemporalMarker(() -> {
-                    targetInches = high;
+                    liftMotorLeft.setTargetPosition((int) high);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) high);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to score 5th cone off stack on high
@@ -293,7 +331,10 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(scoreTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = 0;
+                    liftMotorLeft.setTargetPosition(0);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition(0);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to park
@@ -307,7 +348,10 @@ public class AprilTagRightTank extends LinearOpMode
 
         TrajectorySequence parkingTwo = drive.trajectorySequenceBuilder(startPose)
                 .addTemporalMarker(() -> {
-                    targetInches = low;
+                    liftMotorLeft.setTargetPosition((int) low);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) low);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to score preload on low
@@ -318,7 +362,10 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(scoreTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = stack1;
+                    liftMotorLeft.setTargetPosition((int) stack1);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) stack1);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to pick 1st cone off stack
@@ -333,11 +380,17 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(stackTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = targetInches + 5;
+                    liftMotorLeft.setTargetPosition((int) (stack1 + stackLift));
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) (stack1 + stackLift));
+                    liftMotorRight.setPower(1.0);
                 })
                 .waitSeconds(stackTime3)
                 .addTemporalMarker(() -> {
-                    targetInches = high;
+                    liftMotorLeft.setTargetPosition((int) high);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) high);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to score 1st cone off stack on high
@@ -350,7 +403,10 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(scoreTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = stack2;
+                    liftMotorLeft.setTargetPosition((int) stack2);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) stack2);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to pick 2nd cone off stack
@@ -363,11 +419,17 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(stackTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = targetInches + 5;
+                    liftMotorLeft.setTargetPosition((int) (stack2 + stackLift));
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) (stack2 + stackLift));
+                    liftMotorRight.setPower(1.0);
                 })
                 .waitSeconds(stackTime3)
                 .addTemporalMarker(() -> {
-                    targetInches = low;
+                    liftMotorLeft.setTargetPosition((int) low);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) low);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to score 2nd cone off stack on low
@@ -379,7 +441,10 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(scoreTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = stack3;
+                    liftMotorLeft.setTargetPosition((int) stack3);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) stack3);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to pick 3rd cone off stack
@@ -391,11 +456,17 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(stackTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = targetInches + 5;
+                    liftMotorLeft.setTargetPosition((int) (stack3 + stackLift));
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) (stack3 + stackLift));
+                    liftMotorRight.setPower(1.0);
                 })
                 .waitSeconds(stackTime3)
                 .addTemporalMarker(() -> {
-                    targetInches = high;
+                    liftMotorLeft.setTargetPosition((int) high);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) high);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to score 3rd cone off stack on high
@@ -408,7 +479,10 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(scoreTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = stack4;
+                    liftMotorLeft.setTargetPosition((int) stack4);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) stack4);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to pick 4th cone off stack
@@ -421,11 +495,17 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(stackTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = targetInches + 5;
+                    liftMotorLeft.setTargetPosition((int) (stack4 + stackLift));
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) (stack4 + stackLift));
+                    liftMotorRight.setPower(1.0);
                 })
                 .waitSeconds(stackTime3)
                 .addTemporalMarker(() -> {
-                    targetInches = medium;
+                    liftMotorLeft.setTargetPosition((int) medium);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) medium);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to score 4th cone off stack on medium
@@ -438,7 +518,10 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(scoreTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = stack5;
+                    liftMotorLeft.setTargetPosition((int) stack5);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) stack5);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to pick 5th cone off stack
@@ -451,11 +534,10 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(stackTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = targetInches + 5;
-                })
-                .waitSeconds(stackTime3)
-                .addTemporalMarker(() -> {
-                    targetInches = high;
+                    liftMotorLeft.setTargetPosition((int) high);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) high);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to score 5th cone off stack on high
@@ -468,7 +550,10 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(scoreTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = 0;
+                    liftMotorLeft.setTargetPosition(0);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition(0);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to park
@@ -481,7 +566,10 @@ public class AprilTagRightTank extends LinearOpMode
 
         TrajectorySequence parkingThree = drive.trajectorySequenceBuilder(startPose)
                 .addTemporalMarker(() -> {
-                    targetInches = low;
+                    liftMotorLeft.setTargetPosition((int) low);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) low);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to score preload on low
@@ -492,7 +580,10 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(scoreTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = stack1;
+                    liftMotorLeft.setTargetPosition((int) stack1);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) stack1);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to pick 1st cone off stack
@@ -507,11 +598,17 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(stackTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = targetInches + 5;
+                    liftMotorLeft.setTargetPosition((int) (stack1 + stackLift));
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) (stack1 + stackLift));
+                    liftMotorRight.setPower(1.0);
                 })
                 .waitSeconds(stackTime3)
                 .addTemporalMarker(() -> {
-                    targetInches = high;
+                    liftMotorLeft.setTargetPosition((int) high);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) high);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to score 1st cone off stack on high
@@ -524,7 +621,10 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(scoreTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = stack2;
+                    liftMotorLeft.setTargetPosition((int) stack2);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) stack2);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to pick 2nd cone off stack
@@ -537,11 +637,17 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(stackTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = targetInches + 5;
+                    liftMotorLeft.setTargetPosition((int) (stack2 + stackLift));
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) (stack2 + stackLift));
+                    liftMotorRight.setPower(1.0);
                 })
                 .waitSeconds(stackTime3)
                 .addTemporalMarker(() -> {
-                    targetInches = low;
+                    liftMotorLeft.setTargetPosition((int) low);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) low);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to score 2nd cone off stack on low
@@ -553,7 +659,10 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(scoreTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = stack3;
+                    liftMotorLeft.setTargetPosition((int) stack3);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) stack3);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to pick 3rd cone off stack
@@ -565,11 +674,17 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(stackTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = targetInches + 5;
+                    liftMotorLeft.setTargetPosition((int) (stack3 + stackLift));
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) (stack3 + stackLift));
+                    liftMotorRight.setPower(1.0);
                 })
                 .waitSeconds(stackTime3)
                 .addTemporalMarker(() -> {
-                    targetInches = high;
+                    liftMotorLeft.setTargetPosition((int) high);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) high);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to score 3rd cone off stack on high
@@ -582,7 +697,10 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(scoreTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = stack4;
+                    liftMotorLeft.setTargetPosition((int) stack4);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) stack4);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to pick 4th cone off stack
@@ -595,11 +713,17 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(stackTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = targetInches + 5;
+                    liftMotorLeft.setTargetPosition((int) (stack4 + stackLift));
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) (stack4 + stackLift));
+                    liftMotorRight.setPower(1.0);
                 })
                 .waitSeconds(stackTime3)
                 .addTemporalMarker(() -> {
-                    targetInches = medium;
+                    liftMotorLeft.setTargetPosition((int) medium);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) medium);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to score 4th cone off stack on medium
@@ -612,7 +736,10 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(scoreTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = stack5;
+                    liftMotorLeft.setTargetPosition((int) stack5);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) stack5);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to pick 5th cone off stack
@@ -625,11 +752,10 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(stackTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = targetInches + 5;
-                })
-                .waitSeconds(stackTime3)
-                .addTemporalMarker(() -> {
-                    targetInches = high;
+                    liftMotorLeft.setTargetPosition((int) high);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) high);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to score 5th cone off stack on high
@@ -642,7 +768,10 @@ public class AprilTagRightTank extends LinearOpMode
                 })
                 .waitSeconds(scoreTime2)
                 .addTemporalMarker(() -> {
-                    targetInches = 0;
+                    liftMotorLeft.setTargetPosition(0);
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition(0);
+                    liftMotorRight.setPower(1.0);
                 })
 
                 // Go to park
@@ -755,19 +884,6 @@ public class AprilTagRightTank extends LinearOpMode
 
         while(opModeIsActive()) {
             drive.update();
-
-            int targetPosition = (int)(targetInches * 30.71283);
-            // Update pid controller
-            double leftCommand = control.update(targetPosition, liftMotorLeft.getCurrentPosition());
-            double rightCommand = control.update(targetPosition, liftMotorRight.getCurrentPosition());
-            leftCommand = Range.clip(leftCommand, -1, 1);
-            rightCommand = Range.clip(rightCommand, -1, 1);
-            // Assign PID output
-            dashboardTelemetry.addData("Command Left", leftCommand);
-            dashboardTelemetry.addData("Command Right", rightCommand);
-            liftMotorLeft.setPower(leftCommand);
-            liftMotorRight.setPower(rightCommand);
-
         }
         //endregion
 

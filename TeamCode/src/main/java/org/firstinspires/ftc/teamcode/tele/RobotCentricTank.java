@@ -65,11 +65,11 @@ public class RobotCentricTank extends LinearOpMode {
         driveMotorRight.setDirection(DcMotorSimple.Direction.REVERSE);
         liftMotorRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        liftMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        liftMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //liftMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //liftMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        liftMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //liftMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //clawSensor = hardwareMap.get(NormalizedColorSensor.class, "clawSensor");
         //guideSensor = hardwareMap.get(NormalizedColorSensor.class, "guideSensor");
@@ -88,6 +88,9 @@ public class RobotCentricTank extends LinearOpMode {
 
         while (opModeIsActive()) {
             double position = (liftMotorLeft.getCurrentPosition() + liftMotorRight.getCurrentPosition()) / (30.71283 / 2);
+            telemetry.addData("Position", position);
+            telemetry.addData("multiplier", multiplier);
+            telemetry.addData("Stack Height", stackHeight);
             //NormalizedRGBA clawColors = clawSensor.getNormalizedColors();
             //NormalizedRGBA guideColors = guideSensor.getNormalizedColors();
             //double clawDistance = clawDistanceSensor.getDistance(DistanceUnit.MM);
@@ -107,7 +110,7 @@ public class RobotCentricTank extends LinearOpMode {
             if(gamepad1.left_trigger > 0.2 || gamepad1.right_trigger > 0.2) {
                 multiplier = 0.5;
             }
-            else if(position < 12) {
+            else if(position > 12) {
                 multiplier = 0.5;
             }
             else {
@@ -216,8 +219,8 @@ public class RobotCentricTank extends LinearOpMode {
             float rotatePower = gamepad1.right_stick_x;
 
             // Flip these signs if the robot rotates the wrong way
-            driveMotorLeft.setPower((drivePower + rotatePower) * multiplier);
-            driveMotorRight.setPower((drivePower - rotatePower) * multiplier);
+            driveMotorLeft.setPower((drivePower - rotatePower) * multiplier);
+            driveMotorRight.setPower((drivePower + rotatePower) * multiplier);
 
             telemetry.update();
             dashboardTelemetry.update();
