@@ -18,7 +18,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.SampleTankDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.util.PIDController;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -90,10 +89,10 @@ public class AprilTagLeftTank extends LinearOpMode
 
         // Servo
         Servo gripServo = hardwareMap.servo.get("manipulator");
-        Servo leftV4B = hardwareMap.servo.get("leftV4B");
-        Servo rightV4B = hardwareMap.servo.get("rightV4B");
-        Servo leftGuide = hardwareMap.servo.get("leftGuide");
-        Servo rightGuide = hardwareMap.servo.get("rightGuide");
+        //Servo leftV4B = hardwareMap.servo.get("leftV4B");
+        //Servo rightV4B = hardwareMap.servo.get("rightV4B");
+        //Servo leftGuide = hardwareMap.servo.get("leftGuide");
+        //Servo rightGuide = hardwareMap.servo.get("rightGuide");
 
         // Declare our motors
         // Make sure your ID's match your configuration
