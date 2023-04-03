@@ -62,7 +62,7 @@ public class RobotCentricTank extends LinearOpMode {
         liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        driveMotorRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        driveMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         liftMotorRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         //liftMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -219,8 +219,8 @@ public class RobotCentricTank extends LinearOpMode {
             float rotatePower = gamepad1.right_stick_x;
 
             // Flip these signs if the robot rotates the wrong way
-            driveMotorLeft.setPower((drivePower - rotatePower) * multiplier);
-            driveMotorRight.setPower((drivePower + rotatePower) * multiplier);
+            driveMotorLeft.setPower((drivePower + rotatePower) * multiplier);
+            driveMotorRight.setPower((drivePower - rotatePower) * multiplier);
 
             telemetry.update();
             dashboardTelemetry.update();
