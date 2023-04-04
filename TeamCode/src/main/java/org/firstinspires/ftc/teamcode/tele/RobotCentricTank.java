@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
@@ -43,7 +44,7 @@ public class RobotCentricTank extends LinearOpMode {
         TelemetryPacket packet = new TelemetryPacket();
 
         // Servo
-        //Servo gripServo = hardwareMap.servo.get("manipulator");
+        Servo gripServo = hardwareMap.servo.get("manipulator");
         //Servo leftV4B = hardwareMap.servo.get("leftV4B");
         //Servo rightV4B = hardwareMap.servo.get("rightV4B");
         //Servo leftGuide = hardwareMap.servo.get("leftGuide");
@@ -65,19 +66,16 @@ public class RobotCentricTank extends LinearOpMode {
         driveMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         liftMotorRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        //liftMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        //liftMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        //liftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //liftMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
         //clawSensor = hardwareMap.get(NormalizedColorSensor.class, "clawSensor");
         //guideSensor = hardwareMap.get(NormalizedColorSensor.class, "guideSensor");
         //clawDistanceSensor = hardwareMap.get(DistanceSensor.class, "clawSensor");
         //guideDistanceSensor = hardwareMap.get(DistanceSensor.class, "guideSensor");
         //clawSensor.setGain(10);
 
-        //gripServo.setPosition(open);
+        gripServo.setPosition(open);
+
+        Gamepad currentGamepad1 = new Gamepad();
+        Gamepad previousGamepad1 = new Gamepad();
 
         telemetry.addLine("Ready");
         telemetry.update();
@@ -87,7 +85,11 @@ public class RobotCentricTank extends LinearOpMode {
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
-            double position = (liftMotorLeft.getCurrentPosition() + liftMotorRight.getCurrentPosition()) / (30.71283 / 2);
+
+            previousGamepad1.copy(currentGamepad1);
+            currentGamepad1.copy(gamepad1);
+
+            double position = (Math.abs(liftMotorLeft.getCurrentPosition()) + Math.abs(liftMotorRight.getCurrentPosition())) / (30.71283 / 2);
             telemetry.addData("Position", position);
             telemetry.addData("multiplier", multiplier);
             telemetry.addData("Stack Height", stackHeight);
@@ -124,7 +126,7 @@ public class RobotCentricTank extends LinearOpMode {
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) position - 1);
                     liftMotorRight.setPower(1.0);
-                    //gripServo.setPosition(open);
+                    gripServo.setPosition(open);
                     //leftV4B.setPosition(0.0);
                     //rightV4B.setPosition(0.83);
                     //leftGuide.setPosition(0.0);
@@ -134,14 +136,14 @@ public class RobotCentricTank extends LinearOpMode {
                     liftMotorRight.setTargetPosition(0);
                     liftMotorRight.setPower(1.0);
                 }
-                //else {
-                    //gripServo.setPosition(open);
-                //}
+                else {
+                    gripServo.setPosition(open);
+                }
             }
             // Manual claw
-            //if (gamepad1.dpad_right) {
-                //gripServo.setPosition(closed);
-            //}
+            if (gamepad1.dpad_right) {
+                gripServo.setPosition(closed);
+            }
 
             // Guide
             //if (gamepad1.dpad_left) {
@@ -154,7 +156,7 @@ public class RobotCentricTank extends LinearOpMode {
 
             // Auto heights
             if (gamepad1.y) {
-                //gripServo.setPosition(closed);
+                gripServo.setPosition(closed);
                 liftMotorLeft.setTargetPosition((int) high);
                 liftMotorLeft.setPower(1.0);
                 liftMotorRight.setTargetPosition((int) high);
@@ -165,7 +167,7 @@ public class RobotCentricTank extends LinearOpMode {
                 //rightGuide.setPosition(0.3);
             }
             else if (gamepad1.b) {
-                //gripServo.setPosition(closed);
+                gripServo.setPosition(closed);
                 liftMotorLeft.setTargetPosition((int) medium);
                 liftMotorLeft.setPower(1.0);
                 liftMotorRight.setTargetPosition((int) medium);
@@ -176,7 +178,7 @@ public class RobotCentricTank extends LinearOpMode {
                 //rightGuide.setPosition(0.3);
             }
             else if (gamepad1.a) {
-                //gripServo.setPosition(closed);
+                gripServo.setPosition(closed);
                 liftMotorLeft.setTargetPosition((int) low);
                 liftMotorLeft.setPower(1.0);
                 liftMotorRight.setTargetPosition((int) low);
@@ -197,7 +199,7 @@ public class RobotCentricTank extends LinearOpMode {
                 //rightGuide.setPosition(0.0);
             }
             // Cone stack heights
-            if (gamepad1.right_bumper && stackHeight >= 1) {
+            if (currentGamepad1.right_bumper && !previousGamepad1.right_bumper && stackHeight >= 1) {
                 stackHeight = stackHeight - 1;
                 liftMotorLeft.setTargetPosition((int) (stackHeight * 30.71283));
                 liftMotorLeft.setPower(1.0);
@@ -205,7 +207,7 @@ public class RobotCentricTank extends LinearOpMode {
                 liftMotorRight.setPower(1.0);
             }
 
-            if (gamepad1.left_bumper) {
+            if (currentGamepad1.left_bumper && !previousGamepad1.left_bumper) {
                 stackHeight = stackHeight + 1;
                 liftMotorLeft.setTargetPosition((int) (stackHeight * 30.71283));
                 liftMotorLeft.setPower(1.0);
