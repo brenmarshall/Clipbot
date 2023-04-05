@@ -47,7 +47,7 @@ public class rrTesting extends LinearOpMode {
         liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        liftMotorRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        liftMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
         Servo gripServo = hardwareMap.servo.get("manipulator");
 

@@ -20,9 +20,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 @TeleOp(name="RobotCentricTank")
 public class RobotCentricTank extends LinearOpMode {
 
-    public static double low = 1.0 * 30.71283;
-    public static double medium = 11.0 * 30.71283;
-    public static double high = 21.0 * 30.71283;
+    public static double encoderMultiplier = 30.71283;
+    public static double low = 1.0 * encoderMultiplier;
+    public static double medium = 11.0 * encoderMultiplier;
+    public static double high = 21.0 * encoderMultiplier;
     public static double open = 0.8;
     public static double closed = 1.0;
     double multiplier = 1.0;
@@ -64,7 +65,7 @@ public class RobotCentricTank extends LinearOpMode {
         liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         driveMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        liftMotorRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        liftMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
         //clawSensor = hardwareMap.get(NormalizedColorSensor.class, "clawSensor");
         //guideSensor = hardwareMap.get(NormalizedColorSensor.class, "guideSensor");
@@ -89,8 +90,14 @@ public class RobotCentricTank extends LinearOpMode {
             previousGamepad1.copy(currentGamepad1);
             currentGamepad1.copy(gamepad1);
 
-            double position = (Math.abs(liftMotorLeft.getCurrentPosition()) + Math.abs(liftMotorRight.getCurrentPosition())) / (30.71283 / 2);
-            telemetry.addData("Position", position);
+            double addedPosition = (liftMotorLeft.getCurrentPosition()) + (liftMotorRight.getCurrentPosition());
+            double averagedPosition = (addedPosition / 2);
+            double averagedInches = (averagedPosition / encoderMultiplier);
+            telemetry.addData("Left Position", liftMotorLeft.getCurrentPosition());
+            telemetry.addData("Right Position", liftMotorRight.getCurrentPosition());
+            telemetry.addData("Added Position", addedPosition);
+            telemetry.addData("Averaged Position", averagedPosition);
+            telemetry.addData("Averaged Inches", averagedInches);
             telemetry.addData("multiplier", multiplier);
             telemetry.addData("Stack Height", stackHeight);
             //NormalizedRGBA clawColors = clawSensor.getNormalizedColors();
@@ -101,9 +108,6 @@ public class RobotCentricTank extends LinearOpMode {
                 //gripServo.setPosition(closed);
                 //telemetry.addData("Cone Detected", clawDistance);
             //}
-            //else {
-                //gripServo.setPosition(open);
-            //}
 
             //if(guideColors.red > 0.9 && guideColors.green > 0.9  && guideColors.blue < 0.1 && guideDistance < 10 && targetInches >= 1) {
                 //targetInches = targetInches - 1;
@@ -112,7 +116,7 @@ public class RobotCentricTank extends LinearOpMode {
             if(gamepad1.left_trigger > 0.2 || gamepad1.right_trigger > 0.2) {
                 multiplier = 0.5;
             }
-            else if(position > 12) {
+            else if(averagedInches > 10) {
                 multiplier = 0.5;
             }
             else {
@@ -121,10 +125,10 @@ public class RobotCentricTank extends LinearOpMode {
 
             // Release cone
             if (gamepad1.x) {
-                if (position >= 1) {
-                    liftMotorLeft.setTargetPosition((int) position - 1);
+                if (averagedInches >= 1) {
+                    liftMotorLeft.setTargetPosition((int) ((int) averagedInches - encoderMultiplier));
                     liftMotorLeft.setPower(1.0);
-                    liftMotorRight.setTargetPosition((int) position - 1);
+                    liftMotorRight.setTargetPosition((int) ((int) averagedInches - encoderMultiplier));
                     liftMotorRight.setPower(1.0);
                     gripServo.setPosition(open);
                     //leftV4B.setPosition(0.0);
@@ -201,17 +205,17 @@ public class RobotCentricTank extends LinearOpMode {
             // Cone stack heights
             if (currentGamepad1.right_bumper && !previousGamepad1.right_bumper && stackHeight >= 1) {
                 stackHeight = stackHeight - 1;
-                liftMotorLeft.setTargetPosition((int) (stackHeight * 30.71283));
+                liftMotorLeft.setTargetPosition((int) (stackHeight * encoderMultiplier));
                 liftMotorLeft.setPower(1.0);
-                liftMotorRight.setTargetPosition((int) (stackHeight * 30.71283));
+                liftMotorRight.setTargetPosition((int) (stackHeight * encoderMultiplier));
                 liftMotorRight.setPower(1.0);
             }
 
             if (currentGamepad1.left_bumper && !previousGamepad1.left_bumper) {
                 stackHeight = stackHeight + 1;
-                liftMotorLeft.setTargetPosition((int) (stackHeight * 30.71283));
+                liftMotorLeft.setTargetPosition((int) (stackHeight * encoderMultiplier));
                 liftMotorLeft.setPower(1.0);
-                liftMotorRight.setTargetPosition((int) (stackHeight * 30.71283));
+                liftMotorRight.setTargetPosition((int) (stackHeight * encoderMultiplier));
                 liftMotorRight.setPower(1.0);
             }
 

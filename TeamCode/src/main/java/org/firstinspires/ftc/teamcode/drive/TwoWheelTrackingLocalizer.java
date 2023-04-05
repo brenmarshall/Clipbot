@@ -38,10 +38,10 @@ public class TwoWheelTrackingLocalizer extends TwoTrackingWheelLocalizer {
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
 
     // TODO: DO THIS https://learnroadrunner.com/dead-wheels.html#two-wheel-odometry FOR THE WHEELS
-    public static double PARALLEL_X = -6; // X is the up and down direction
+    public static double PARALLEL_X = -8.25; // X is the up and down direction
     public static double PARALLEL_Y = 3.375; // Y is the strafe direction
 
-    public static double PERPENDICULAR_X = -2;
+    public static double PERPENDICULAR_X = -4.25;
     public static double PERPENDICULAR_Y = -3.875;
 
     public static double X_MULTIPLIER = 1; // Multiplier in the X direction
