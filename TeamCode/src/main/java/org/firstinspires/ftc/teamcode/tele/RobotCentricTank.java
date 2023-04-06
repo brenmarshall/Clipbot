@@ -32,6 +32,7 @@ public class RobotCentricTank extends LinearOpMode {
     double multiplier = 1.0;
     double stackHeight = 0.0;
     double beforeTime = 0;
+    boolean drive = true;
 
     ElapsedTime time = new ElapsedTime();
 
@@ -155,6 +156,7 @@ public class RobotCentricTank extends LinearOpMode {
             // Release cone
             if (gamepad1.x) {
                 if (averagedInches >= 0.5) {
+                    drive = false;
                     beforeTime = time.milliseconds();
                     liftMotorLeft.setTargetPosition((int) ((int) averagedPosition - (2 * encoderMultiplier)));
                     liftMotorLeft.setPower(1.0);
@@ -176,6 +178,7 @@ public class RobotCentricTank extends LinearOpMode {
                  liftMotorLeft.setPower(1.0);
                  liftMotorRight.setTargetPosition(0);
                  liftMotorRight.setPower(1.0);
+                 drive = true;
                  beforeTime = -1;
             }
             // Manual claw
@@ -276,8 +279,14 @@ public class RobotCentricTank extends LinearOpMode {
             float rotatePower = gamepad1.right_stick_x;
 
             // Flip these signs if the robot rotates the wrong way
-            driveMotorLeft.setPower((drivePower + rotatePower) * multiplier);
-            driveMotorRight.setPower((drivePower - rotatePower) * multiplier);
+            if (drive) {
+                driveMotorLeft.setPower((drivePower + rotatePower) * multiplier);
+                driveMotorRight.setPower((drivePower - rotatePower) * multiplier);
+            }
+            else {
+                driveMotorLeft.setPower(0.0);
+                driveMotorRight.setPower(0.0);
+            }
 
             telemetry.update();
             dashboardTelemetry.update();
