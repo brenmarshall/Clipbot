@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -31,6 +32,9 @@ public class RobotCentricTank extends LinearOpMode {
     public static double closed = 1.0;
     double multiplier = 1.0;
     double stackHeight = 0.0;
+    double beforeTime = 0;
+
+    ElapsedTime time = new ElapsedTime();
 
     DcMotorEx liftMotorLeft;
     DcMotorEx liftMotorRight;
@@ -142,23 +146,28 @@ public class RobotCentricTank extends LinearOpMode {
             // Release cone
             if (gamepad1.x) {
                 if (averagedInches >= 1) {
+                    beforeTime = time.milliseconds();
                     liftMotorLeft.setTargetPosition((int) ((int) averagedInches - encoderMultiplier));
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) ((int) averagedInches - encoderMultiplier));
                     liftMotorRight.setPower(1.0);
                     gripServo.setPosition(open);
-                    //leftV4B.setPosition(0.0);
-                    //rightV4B.setPosition(0.83);
-                    //leftGuide.setPosition(0.0);
-                    //rightGuide.setPosition(0.3);
-                    liftMotorLeft.setTargetPosition(0);
-                    liftMotorLeft.setPower(1.0);
-                    liftMotorRight.setTargetPosition(0);
-                    liftMotorRight.setPower(1.0);
                 }
                 else {
                     gripServo.setPosition(open);
                 }
+            }
+
+            if (time.milliseconds() - beforeTime > 500 && beforeTime != -1) {
+                 //leftV4B.setPosition(0.0);
+                 //rightV4B.setPosition(0.83);
+                 //leftGuide.setPosition(0.0);
+                 //rightGuide.setPosition(0.3);
+                 liftMotorLeft.setTargetPosition(0);
+                 liftMotorLeft.setPower(1.0);
+                 liftMotorRight.setTargetPosition(0);
+                 liftMotorRight.setPower(1.0);
+                 beforeTime = -1;
             }
             // Manual claw
             if (gamepad1.dpad_right) {
