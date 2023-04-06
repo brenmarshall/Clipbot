@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -63,8 +64,8 @@ public class RobotCentricTank extends LinearOpMode {
 
         // Declare our motors
         // Make sure your ID's match your configuration
-        driveMotorLeft = hardwareMap.get(DcMotorEx.class, "driveMotorLeft");
-        driveMotorLeft = hardwareMap.get(DcMotorEx.class, "driveMotorLeft");
+        DcMotor driveMotorLeft = hardwareMap.dcMotor.get("driveMotorLeft");
+        DcMotor driveMotorRight = hardwareMap.dcMotor.get("driveMotorRight");
         liftMotorLeft = hardwareMap.get(DcMotorEx.class, "liftMotorLeft");
         liftMotorRight = hardwareMap.get(DcMotorEx.class, "liftMotorRight");
 
@@ -74,7 +75,7 @@ public class RobotCentricTank extends LinearOpMode {
         liftMotorLeft.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         liftMotorRight.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
-        driveMotorLeft.setDirection(DcMotorEx.Direction.REVERSE);
+        driveMotorLeft.setDirection(DcMotor.Direction.REVERSE);
         liftMotorLeft.setDirection(DcMotorEx.Direction.REVERSE);
 
         //clawSensor = hardwareMap.get(NormalizedColorSensor.class, "clawSensor");
@@ -88,7 +89,7 @@ public class RobotCentricTank extends LinearOpMode {
         Gamepad currentGamepad1 = new Gamepad();
         Gamepad previousGamepad1 = new Gamepad();
 
-        telemetry.addData("PIDF Values", liftMotorLeft.getPIDFCoefficients(DcMotorEx.RunMode.RUN_TO_POSITION));
+        //telemetry.addData("PIDF Values", liftMotorLeft.getPIDFCoefficients(DcMotorEx.RunMode.RUN_TO_POSITION));
 
         telemetry.addLine("Ready");
         telemetry.update();
@@ -108,7 +109,8 @@ public class RobotCentricTank extends LinearOpMode {
             double leftCurrent = liftMotorLeft.getCurrent(CurrentUnit.AMPS);
             double rightCurrent = liftMotorRight.getCurrent(CurrentUnit.AMPS);
             double addedTarget = liftMotorLeft.getTargetPosition() + liftMotorRight.getTargetPosition();
-            double targetInches = addedTarget / 2;
+            double averagedTarget = addedTarget / 2;
+            double targetInches = averagedTarget / encoderMultiplier;
             telemetry.addData("Left Position", liftMotorLeft.getCurrentPosition());
             telemetry.addData("Right Position", liftMotorRight.getCurrentPosition());
             telemetry.addData("Added Position", addedPosition);
@@ -118,6 +120,8 @@ public class RobotCentricTank extends LinearOpMode {
             telemetry.addData("Stack Height", stackHeight);
             telemetry.addData("Left Current", leftCurrent);
             telemetry.addData("Right Current", rightCurrent);
+            telemetry.addData("Target Inches", targetInches);
+            telemetry.addData("PIDF Value", liftMotorLeft.getPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION));
             //NormalizedRGBA clawColors = clawSensor.getNormalizedColors();
             //NormalizedRGBA guideColors = guideSensor.getNormalizedColors();
             //double clawDistance = clawDistanceSensor.getDistance(DistanceUnit.MM);
@@ -128,10 +132,14 @@ public class RobotCentricTank extends LinearOpMode {
             //}
 
             //if(guideColors.red > 0.9 && guideColors.green > 0.9  && guideColors.blue < 0.1 && guideDistance < 10 && averagedInches >= 0.5) {
-                //liftMotorLeft.setTargetPosition((int) ((int) averagedPosition - encoderMultiplier));
-                //liftMotorLeft.setPower(1.0);
-                //liftMotorRight.setTargetPosition((int) ((int) averagedPosition - encoderMultiplier));
-                //liftMotorRight.setPower(1.0);
+                //if (averagedInches >= 0.5) {
+                    //beforeTime = time.milliseconds();
+                    //liftMotorLeft.setTargetPosition((int) ((int) averagedPosition - (2 * encoderMultiplier)));
+                    //liftMotorLeft.setPower(1.0);
+                    //liftMotorRight.setTargetPosition((int) ((int) averagedPosition - (2 * encoderMultiplier)));
+                    //liftMotorRight.setPower(1.0);
+                    //gripServo.setPosition(open);
+                //}
             //}
 
             if(gamepad1.left_trigger > 0.2 || gamepad1.right_trigger > 0.2) {
@@ -148,9 +156,9 @@ public class RobotCentricTank extends LinearOpMode {
             if (gamepad1.x) {
                 if (averagedInches >= 0.5) {
                     beforeTime = time.milliseconds();
-                    liftMotorLeft.setTargetPosition((int) ((int) averagedPosition - encoderMultiplier));
+                    liftMotorLeft.setTargetPosition((int) ((int) averagedPosition - (2 * encoderMultiplier)));
                     liftMotorLeft.setPower(1.0);
-                    liftMotorRight.setTargetPosition((int) ((int) averagedPosition - encoderMultiplier));
+                    liftMotorRight.setTargetPosition((int) ((int) averagedPosition - (2 * encoderMultiplier)));
                     liftMotorRight.setPower(1.0);
                     gripServo.setPosition(open);
                 }
@@ -159,7 +167,7 @@ public class RobotCentricTank extends LinearOpMode {
                 }
             }
 
-            if (time.milliseconds() - beforeTime > 500 && beforeTime != -1) {
+            if (time.milliseconds() - beforeTime > 1000 && beforeTime != -1) {
                  //leftV4B.setPosition(0.0);
                  //rightV4B.setPosition(0.83);
                  //leftGuide.setPosition(0.0);
@@ -245,21 +253,21 @@ public class RobotCentricTank extends LinearOpMode {
                 liftMotorRight.setPower(1.0);
             }
 
-            if (leftCurrent > 10) {
+            if (targetInches == 0 && averagedInches < 0.5) {
                 liftMotorLeft.setPower(0.0);
             }
 
-            if (rightCurrent > 10) {
+            if (targetInches == 0 && averagedInches < 0.5) {
                 liftMotorRight.setPower(0.0);
             }
 
             if (Math.abs(targetInches - averagedInches) < 2) {
-                liftMotorLeft.setPIDFCoefficients(DcMotorEx.RunMode.RUN_TO_POSITION, new PIDFCoefficients(1, 1, 1, 1));
-                liftMotorRight.setPIDFCoefficients(DcMotorEx.RunMode.RUN_TO_POSITION, new PIDFCoefficients(1, 1, 1, 1));
+                liftMotorLeft.setPositionPIDFCoefficients(20);
+                liftMotorRight.setPositionPIDFCoefficients(20);
             }
             else {
-                liftMotorLeft.setPIDFCoefficients(DcMotorEx.RunMode.RUN_TO_POSITION, new PIDFCoefficients(0, 0, 0, 0));
-                liftMotorRight.setPIDFCoefficients(DcMotorEx.RunMode.RUN_TO_POSITION, new PIDFCoefficients(0, 0, 0, 0 ));
+                liftMotorLeft.setPositionPIDFCoefficients(15);
+                liftMotorRight.setPositionPIDFCoefficients(15);
             }
 
             // drivePower is the power for forward/backward movement
