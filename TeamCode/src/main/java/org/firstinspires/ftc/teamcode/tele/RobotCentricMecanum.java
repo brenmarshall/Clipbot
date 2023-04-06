@@ -6,19 +6,16 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.util.PIDController;
 
 // Warning: this code is garbage and nobody knows how it works :D
 @TeleOp(name="RobotCentricMecanum")
@@ -77,15 +74,15 @@ public class RobotCentricMecanum extends LinearOpMode {
         liftMotorLeft.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         liftMotorRight.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
-        motorFrontRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorBackRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorFrontRight.setDirection(DcMotor.Direction.REVERSE);
+        motorBackRight.setDirection(DcMotor.Direction.REVERSE);
         liftMotorLeft.setDirection(DcMotorEx.Direction.REVERSE);
 
-        ///clawSensor = hardwareMap.get(NormalizedColorSensor.class, "clawSensor");
+        clawSensor = hardwareMap.get(NormalizedColorSensor.class, "clawSensor");
         guideSensor = hardwareMap.get(NormalizedColorSensor.class, "guideSensor");
-        //clawDistanceSensor = hardwareMap.get(DistanceSensor.class, "clawSensor");
+        clawDistanceSensor = hardwareMap.get(DistanceSensor.class, "clawSensor");
         guideDistanceSensor = hardwareMap.get(DistanceSensor.class, "guideSensor");
-        //clawSensor.setGain(10);
+        clawSensor.setGain(10);
         guideSensor.setGain(10);
 
         gripServo.setPosition(open);
@@ -122,14 +119,14 @@ public class RobotCentricMecanum extends LinearOpMode {
             telemetry.addData("PIDF Value", liftMotorLeft.getPIDFCoefficients(DcMotorEx.RunMode.RUN_TO_POSITION));
 
             // Color sensing
-            //NormalizedRGBA clawColors = clawSensor.getNormalizedColors();
+            NormalizedRGBA clawColors = clawSensor.getNormalizedColors();
             NormalizedRGBA guideColors = guideSensor.getNormalizedColors();
-            //double clawDistance = clawDistanceSensor.getDistance(DistanceUnit.MM);
+            double clawDistance = clawDistanceSensor.getDistance(DistanceUnit.MM);
             double guideDistance = guideDistanceSensor.getDistance(DistanceUnit.MM);
-            //if(clawColors.red > 0.2 && clawDistance < 20 || clawColors.blue > 0.2 && clawDistance < 20) {
-            //gripServo.setPosition(closed);
-            //telemetry.addData("Cone Detected", clawDistance);
-            //}
+            if(clawColors.red > 0.2 && clawDistance < 20 || clawColors.blue > 0.2 && clawDistance < 20) {
+                gripServo.setPosition(closed);
+                telemetry.addData("Cone Detected", clawDistance);
+            }
 
             if(guideColors.red > 0.9 && guideColors.green > 0.9  && guideColors.blue < 0.1 && guideDistance < 10 && averagedInches >= 0.5) {
                 drive = false;
