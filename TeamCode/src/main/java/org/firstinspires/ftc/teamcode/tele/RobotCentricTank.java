@@ -5,9 +5,11 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
@@ -15,6 +17,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 // Warning: this code is garbage and nobody knows how it works :D
 @TeleOp(name="RobotCentricTank")
@@ -28,6 +31,9 @@ public class RobotCentricTank extends LinearOpMode {
     public static double closed = 1.0;
     double multiplier = 1.0;
     double stackHeight = 0.0;
+
+    DcMotorEx liftMotorLeft;
+    DcMotorEx liftMotorRight;
 
     //NormalizedColorSensor clawSensor;
     //NormalizedColorSensor guideSensor;
@@ -55,8 +61,10 @@ public class RobotCentricTank extends LinearOpMode {
         // Make sure your ID's match your configuration
         DcMotor driveMotorLeft = hardwareMap.dcMotor.get("driveMotorLeft");
         DcMotor driveMotorRight = hardwareMap.dcMotor.get("driveMotorRight");
-        DcMotor liftMotorLeft = hardwareMap.dcMotor.get("liftMotorLeft");
-        DcMotor liftMotorRight = hardwareMap.dcMotor.get("liftMotorRight");
+        liftMotorLeft = hardwareMap.get(DcMotorEx.class, "liftMotorLeft");
+        liftMotorRight = hardwareMap.get(DcMotorEx.class, "liftMotorRight");
+        //DcMotor liftMotorLeft = hardwareMap.dcMotor.get("liftMotorLeft");
+        //DcMotor liftMotorRight = hardwareMap.dcMotor.get("liftMotorRight");
 
         liftMotorLeft.setTargetPosition(0);
         liftMotorRight.setTargetPosition(0);
@@ -78,6 +86,8 @@ public class RobotCentricTank extends LinearOpMode {
         Gamepad currentGamepad1 = new Gamepad();
         Gamepad previousGamepad1 = new Gamepad();
 
+        telemetry.addData("PIDF Values", liftMotorLeft.getPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION));
+
         telemetry.addLine("Ready");
         telemetry.update();
 
@@ -93,6 +103,10 @@ public class RobotCentricTank extends LinearOpMode {
             double addedPosition = (liftMotorLeft.getCurrentPosition()) + (liftMotorRight.getCurrentPosition());
             double averagedPosition = (addedPosition / 2);
             double averagedInches = (averagedPosition / encoderMultiplier);
+            double leftCurrent = liftMotorLeft.getCurrent(CurrentUnit.AMPS);
+            double rightCurrent = liftMotorRight.getCurrent(CurrentUnit.AMPS);
+            double addedTarget = liftMotorLeft.getTargetPosition() + liftMotorRight.getTargetPosition();
+            double targetInches = addedTarget / 2;
             telemetry.addData("Left Position", liftMotorLeft.getCurrentPosition());
             telemetry.addData("Right Position", liftMotorRight.getCurrentPosition());
             telemetry.addData("Added Position", addedPosition);
@@ -100,6 +114,8 @@ public class RobotCentricTank extends LinearOpMode {
             telemetry.addData("Averaged Inches", averagedInches);
             telemetry.addData("multiplier", multiplier);
             telemetry.addData("Stack Height", stackHeight);
+            telemetry.addData("Left Current", leftCurrent);
+            telemetry.addData("Right Current", rightCurrent);
             //NormalizedRGBA clawColors = clawSensor.getNormalizedColors();
             //NormalizedRGBA guideColors = guideSensor.getNormalizedColors();
             //double clawDistance = clawDistanceSensor.getDistance(DistanceUnit.MM);
@@ -217,6 +233,23 @@ public class RobotCentricTank extends LinearOpMode {
                 liftMotorLeft.setPower(1.0);
                 liftMotorRight.setTargetPosition((int) (stackHeight * encoderMultiplier));
                 liftMotorRight.setPower(1.0);
+            }
+
+            if (leftCurrent > 10) {
+                liftMotorLeft.setPower(0.0);
+            }
+
+            if (rightCurrent > 10) {
+                liftMotorRight.setPower(0.0);
+            }
+
+            if (Math.abs(targetInches - averagedInches) < 2) {
+                liftMotorLeft.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, new PIDFCoefficients(1, 1, 1, 1));
+                liftMotorRight.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, new PIDFCoefficients(1, 1, 1, 1));
+            }
+            else {
+                liftMotorLeft.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, new PIDFCoefficients(0, 0, 0, 0));
+                liftMotorRight.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, new PIDFCoefficients(0, 0, 0, 0 ));
             }
 
             // drivePower is the power for forward/backward movement
