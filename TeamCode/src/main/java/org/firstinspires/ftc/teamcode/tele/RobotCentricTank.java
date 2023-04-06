@@ -4,9 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
@@ -36,6 +34,8 @@ public class RobotCentricTank extends LinearOpMode {
 
     ElapsedTime time = new ElapsedTime();
 
+    DcMotorEx driveMotorLeft;
+    DcMotorEx driveMotorRight;
     DcMotorEx liftMotorLeft;
     DcMotorEx liftMotorRight;
 
@@ -63,21 +63,19 @@ public class RobotCentricTank extends LinearOpMode {
 
         // Declare our motors
         // Make sure your ID's match your configuration
-        DcMotor driveMotorLeft = hardwareMap.dcMotor.get("driveMotorLeft");
-        DcMotor driveMotorRight = hardwareMap.dcMotor.get("driveMotorRight");
+        driveMotorLeft = hardwareMap.get(DcMotorEx.class, "driveMotorLeft");
+        driveMotorLeft = hardwareMap.get(DcMotorEx.class, "driveMotorLeft");
         liftMotorLeft = hardwareMap.get(DcMotorEx.class, "liftMotorLeft");
         liftMotorRight = hardwareMap.get(DcMotorEx.class, "liftMotorRight");
-        //DcMotor liftMotorLeft = hardwareMap.dcMotor.get("liftMotorLeft");
-        //DcMotor liftMotorRight = hardwareMap.dcMotor.get("liftMotorRight");
 
         liftMotorLeft.setTargetPosition(0);
         liftMotorRight.setTargetPosition(0);
 
-        liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftMotorLeft.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        liftMotorRight.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
-        driveMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        liftMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        driveMotorLeft.setDirection(DcMotorEx.Direction.REVERSE);
+        liftMotorLeft.setDirection(DcMotorEx.Direction.REVERSE);
 
         //clawSensor = hardwareMap.get(NormalizedColorSensor.class, "clawSensor");
         //guideSensor = hardwareMap.get(NormalizedColorSensor.class, "guideSensor");
@@ -90,7 +88,7 @@ public class RobotCentricTank extends LinearOpMode {
         Gamepad currentGamepad1 = new Gamepad();
         Gamepad previousGamepad1 = new Gamepad();
 
-        telemetry.addData("PIDF Values", liftMotorLeft.getPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION));
+        telemetry.addData("PIDF Values", liftMotorLeft.getPIDFCoefficients(DcMotorEx.RunMode.RUN_TO_POSITION));
 
         telemetry.addLine("Ready");
         telemetry.update();
@@ -129,8 +127,11 @@ public class RobotCentricTank extends LinearOpMode {
                 //telemetry.addData("Cone Detected", clawDistance);
             //}
 
-            //if(guideColors.red > 0.9 && guideColors.green > 0.9  && guideColors.blue < 0.1 && guideDistance < 10 && targetInches >= 1) {
-                //targetInches = targetInches - 1;
+            //if(guideColors.red > 0.9 && guideColors.green > 0.9  && guideColors.blue < 0.1 && guideDistance < 10 && averagedInches >= 0.5) {
+                //liftMotorLeft.setTargetPosition((int) ((int) averagedPosition - encoderMultiplier));
+                //liftMotorLeft.setPower(1.0);
+                //liftMotorRight.setTargetPosition((int) ((int) averagedPosition - encoderMultiplier));
+                //liftMotorRight.setPower(1.0);
             //}
 
             if(gamepad1.left_trigger > 0.2 || gamepad1.right_trigger > 0.2) {
@@ -145,11 +146,11 @@ public class RobotCentricTank extends LinearOpMode {
 
             // Release cone
             if (gamepad1.x) {
-                if (averagedInches >= 1) {
+                if (averagedInches >= 0.5) {
                     beforeTime = time.milliseconds();
-                    liftMotorLeft.setTargetPosition((int) ((int) averagedInches - encoderMultiplier));
+                    liftMotorLeft.setTargetPosition((int) ((int) averagedPosition - encoderMultiplier));
                     liftMotorLeft.setPower(1.0);
-                    liftMotorRight.setTargetPosition((int) ((int) averagedInches - encoderMultiplier));
+                    liftMotorRight.setTargetPosition((int) ((int) averagedPosition - encoderMultiplier));
                     liftMotorRight.setPower(1.0);
                     gripServo.setPosition(open);
                 }
@@ -253,12 +254,12 @@ public class RobotCentricTank extends LinearOpMode {
             }
 
             if (Math.abs(targetInches - averagedInches) < 2) {
-                liftMotorLeft.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, new PIDFCoefficients(1, 1, 1, 1));
-                liftMotorRight.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, new PIDFCoefficients(1, 1, 1, 1));
+                liftMotorLeft.setPIDFCoefficients(DcMotorEx.RunMode.RUN_TO_POSITION, new PIDFCoefficients(1, 1, 1, 1));
+                liftMotorRight.setPIDFCoefficients(DcMotorEx.RunMode.RUN_TO_POSITION, new PIDFCoefficients(1, 1, 1, 1));
             }
             else {
-                liftMotorLeft.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, new PIDFCoefficients(0, 0, 0, 0));
-                liftMotorRight.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, new PIDFCoefficients(0, 0, 0, 0 ));
+                liftMotorLeft.setPIDFCoefficients(DcMotorEx.RunMode.RUN_TO_POSITION, new PIDFCoefficients(0, 0, 0, 0));
+                liftMotorRight.setPIDFCoefficients(DcMotorEx.RunMode.RUN_TO_POSITION, new PIDFCoefficients(0, 0, 0, 0 ));
             }
 
             // drivePower is the power for forward/backward movement
