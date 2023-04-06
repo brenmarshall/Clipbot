@@ -5,14 +5,18 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.util.PIDController;
 
@@ -20,25 +24,29 @@ import org.firstinspires.ftc.teamcode.util.PIDController;
 @TeleOp(name="RobotCentricMecanum")
 public class RobotCentricMecanum extends LinearOpMode {
 
-    public static double Kp = 0.005, Ki = 0.0, Kd = 0.0;
-    public static double targetInches = 0.0;
-    public static double low = 1;
-    public static double medium = 11;
-    public static double high = 21;
+    public static double encoderMultiplier = 30.71283;
+    public static double low = 2.0 * encoderMultiplier;
+    public static double medium = 12.0 * encoderMultiplier;
+    public static double high = 22.0 * encoderMultiplier;
     public static double open = 0.8;
     public static double closed = 1.0;
     double multiplier = 1.0;
     double stackHeight = 0.0;
+    double beforeTime = 0;
+    boolean drive = true;
 
-    //NormalizedColorSensor clawSensor;
-    //NormalizedColorSensor guideSensor;
-    //DistanceSensor clawDistanceSensor;
-    //DistanceSensor guideDistanceSensor;
+    ElapsedTime time = new ElapsedTime();
+
+    DcMotorEx liftMotorLeft;
+    DcMotorEx liftMotorRight;
+
+    NormalizedColorSensor clawSensor;
+    NormalizedColorSensor guideSensor;
+    DistanceSensor clawDistanceSensor;
+    DistanceSensor guideDistanceSensor;
 
     FtcDashboard dashboard = FtcDashboard.getInstance();
     Telemetry dashboardTelemetry = dashboard.getTelemetry();
-
-    PIDController control = new PIDController(Kp, Ki, Kd, dashboardTelemetry);
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -48,30 +56,42 @@ public class RobotCentricMecanum extends LinearOpMode {
         TelemetryPacket packet = new TelemetryPacket();
 
         // Servo
-        //Servo gripServo = hardwareMap.servo.get("manipulator");
-        //Servo leftV4B = hardwareMap.servo.get("leftV4B");
-        //Servo rightV4B = hardwareMap.servo.get("rightV4B");
-        //Servo leftGuide = hardwareMap.servo.get("leftGuide");
-        //Servo rightGuide = hardwareMap.servo.get("rightGuide");
+        Servo gripServo = hardwareMap.servo.get("manipulator");
+        Servo leftV4B = hardwareMap.servo.get("leftV4B");
+        Servo rightV4B = hardwareMap.servo.get("rightV4B");
+        Servo leftGuide = hardwareMap.servo.get("leftGuide");
+        Servo rightGuide = hardwareMap.servo.get("rightGuide");
 
         // Declare our motors
         // Make sure your ID's match your configuration
-        //DcMotor liftMotorLeft = hardwareMap.dcMotor.get("liftMotorLeft");
-        //DcMotor liftMotorRight = hardwareMap.dcMotor.get("liftMotorRight");
         DcMotor motorFrontLeft = hardwareMap.dcMotor.get("motorFrontLeft");
-        DcMotor motorBackLeft = hardwareMap.dcMotor.get("motorBackLeft");
         DcMotor motorFrontRight = hardwareMap.dcMotor.get("motorFrontRight");
+        DcMotor motorBackLeft = hardwareMap.dcMotor.get("motorBackLeft");
         DcMotor motorBackRight = hardwareMap.dcMotor.get("motorBackRight");
+        liftMotorLeft = hardwareMap.get(DcMotorEx.class, "liftMotorLeft");
+        liftMotorRight = hardwareMap.get(DcMotorEx.class, "liftMotorRight");
 
-        // Reverse the motors
+        liftMotorLeft.setTargetPosition(0);
+        liftMotorRight.setTargetPosition(0);
+
+        liftMotorLeft.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        liftMotorRight.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+
         motorFrontRight.setDirection(DcMotorSimple.Direction.REVERSE);
         motorBackRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        //liftMotorRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        liftMotorLeft.setDirection(DcMotorEx.Direction.REVERSE);
 
-        //clawSensor = hardwareMap.get(NormalizedColorSensor.class, "clawSensor");
-        //guideSensor = hardwareMap.get(NormalizedColorSensor.class, "guideSensor");
+        ///clawSensor = hardwareMap.get(NormalizedColorSensor.class, "clawSensor");
+        guideSensor = hardwareMap.get(NormalizedColorSensor.class, "guideSensor");
         //clawDistanceSensor = hardwareMap.get(DistanceSensor.class, "clawSensor");
-        //guideDistanceSensor = hardwareMap.get(DistanceSensor.class, "guideSensor");
+        guideDistanceSensor = hardwareMap.get(DistanceSensor.class, "guideSensor");
+        //clawSensor.setGain(10);
+        guideSensor.setGain(10);
+
+        gripServo.setPosition(open);
+
+        Gamepad currentGamepad1 = new Gamepad();
+        Gamepad previousGamepad1 = new Gamepad();
 
         telemetry.addLine("Ready");
         telemetry.update();
@@ -81,24 +101,52 @@ public class RobotCentricMecanum extends LinearOpMode {
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
-            /*
-            NormalizedRGBA clawColors = clawSensor.getNormalizedColors();
+            double addedPosition = (liftMotorLeft.getCurrentPosition()) + (liftMotorRight.getCurrentPosition());
+            double averagedPosition = (addedPosition / 2);
+            double averagedInches = (averagedPosition / encoderMultiplier);
+            double leftCurrent = liftMotorLeft.getCurrent(CurrentUnit.AMPS);
+            double rightCurrent = liftMotorRight.getCurrent(CurrentUnit.AMPS);
+            double addedTarget = liftMotorLeft.getTargetPosition() + liftMotorRight.getTargetPosition();
+            double averagedTarget = addedTarget / 2;
+            double targetInches = averagedTarget / encoderMultiplier;
+            telemetry.addData("Left Position", liftMotorLeft.getCurrentPosition());
+            telemetry.addData("Right Position", liftMotorRight.getCurrentPosition());
+            telemetry.addData("Added Position", addedPosition);
+            telemetry.addData("Averaged Position", averagedPosition);
+            telemetry.addData("Averaged Inches", averagedInches);
+            telemetry.addData("multiplier", multiplier);
+            telemetry.addData("Stack Height", stackHeight);
+            telemetry.addData("Left Current", leftCurrent);
+            telemetry.addData("Right Current", rightCurrent);
+            telemetry.addData("Target Inches", targetInches);
+            telemetry.addData("PIDF Value", liftMotorLeft.getPIDFCoefficients(DcMotorEx.RunMode.RUN_TO_POSITION));
+
+            // Color sensing
+            //NormalizedRGBA clawColors = clawSensor.getNormalizedColors();
             NormalizedRGBA guideColors = guideSensor.getNormalizedColors();
-            double clawDistance = clawDistanceSensor.getDistance(DistanceUnit.MM);
+            //double clawDistance = clawDistanceSensor.getDistance(DistanceUnit.MM);
             double guideDistance = guideDistanceSensor.getDistance(DistanceUnit.MM);
-            if(clawColors.red > 0.9 && clawColors.green < 0.1 && clawColors.blue < 0.1 && clawDistance < 20 || clawColors.red < 0.1 && clawColors.green < 0.1 && clawColors.blue > 0.9 && clawDistance < 20) {
-                gripServo.setPosition(closed);
+            //if(clawColors.red > 0.2 && clawDistance < 20 || clawColors.blue > 0.2 && clawDistance < 20) {
+            //gripServo.setPosition(closed);
+            //telemetry.addData("Cone Detected", clawDistance);
+            //}
+
+            if(guideColors.red > 0.9 && guideColors.green > 0.9  && guideColors.blue < 0.1 && guideDistance < 10 && averagedInches >= 0.5) {
+                drive = false;
+                beforeTime = time.milliseconds();
+                liftMotorLeft.setTargetPosition((int) ((int) averagedPosition - (2 * encoderMultiplier)));
+                liftMotorLeft.setPower(1.0);
+                liftMotorRight.setTargetPosition((int) ((int) averagedPosition - (2 * encoderMultiplier)));
+                liftMotorRight.setPower(1.0);
+                gripServo.setPosition(open);
             }
 
-            if(guideColors.red > 0.9 && guideColors.green > 0.9  && guideColors.blue < 0.1 && guideDistance < 10 && targetInches >= 1) {
-                targetInches = targetInches - 1;
-            }
-
-            if(gamepad1.left_trigger > 0.2) {
+            // Speed multiplier
+            if(gamepad1.left_trigger > 0.2 || gamepad1.right_trigger > 0.2) {
                 multiplier = 0.5;
             }
-            else if(targetInches < 10) {
-                multiplier = 0.75;
+            else if(averagedInches > 10) {
+                multiplier = 0.5;
             }
             else {
                 multiplier = 1.0;
@@ -106,17 +154,31 @@ public class RobotCentricMecanum extends LinearOpMode {
 
             // Release cone
             if (gamepad1.x) {
-                if (targetInches >= 1) {
-                    targetInches = targetInches - 1;
-                    gripServo.setPosition(open);
-                    leftV4B.setPosition(0.0);
-                    rightV4B.setPosition(0.83);
-                    leftGuide.setPosition(0.0);
-                    rightGuide.setPosition(0.3);
-                    targetInches = 0;
-                } else {
+                if (averagedInches >= 0.5) {
+                    drive = false;
+                    beforeTime = time.milliseconds();
+                    liftMotorLeft.setTargetPosition((int) ((int) averagedPosition - (2 * encoderMultiplier)));
+                    liftMotorLeft.setPower(1.0);
+                    liftMotorRight.setTargetPosition((int) ((int) averagedPosition - (2 * encoderMultiplier)));
+                    liftMotorRight.setPower(1.0);
                     gripServo.setPosition(open);
                 }
+                else {
+                    gripServo.setPosition(open);
+                }
+            }
+
+            if (time.milliseconds() - beforeTime > 1000 && beforeTime != -1) {
+                leftV4B.setPosition(0.0);
+                rightV4B.setPosition(0.83);
+                leftGuide.setPosition(0.0);
+                rightGuide.setPosition(0.3);
+                liftMotorLeft.setTargetPosition(0);
+                liftMotorLeft.setPower(1.0);
+                liftMotorRight.setTargetPosition(0);
+                liftMotorRight.setPower(1.0);
+                drive = true;
+                beforeTime = -1;
             }
             // Manual claw
             if (gamepad1.dpad_right) {
@@ -135,56 +197,84 @@ public class RobotCentricMecanum extends LinearOpMode {
             // Auto heights
             if (gamepad1.y) {
                 gripServo.setPosition(closed);
-                targetInches = high;
+                liftMotorLeft.setTargetPosition((int) high);
+                liftMotorLeft.setPower(1.0);
+                liftMotorRight.setTargetPosition((int) high);
+                liftMotorRight.setPower(1.0);
                 leftV4B.setPosition(0.83);
                 rightV4B.setPosition(0.0);
                 leftGuide.setPosition(0.0);
                 rightGuide.setPosition(0.3);
-            } else if (gamepad1.b) {
+            }
+            else if (gamepad1.b) {
                 gripServo.setPosition(closed);
-                targetInches = medium;
+                liftMotorLeft.setTargetPosition((int) medium);
+                liftMotorLeft.setPower(1.0);
+                liftMotorRight.setTargetPosition((int) medium);
+                liftMotorRight.setPower(1.0);
                 leftV4B.setPosition(0.83);
                 rightV4B.setPosition(0.0);
                 leftGuide.setPosition(0.0);
                 rightGuide.setPosition(0.3);
-            } else if (gamepad1.a) {
+            }
+            else if (gamepad1.a) {
                 gripServo.setPosition(closed);
-                targetInches = low;
+                liftMotorLeft.setTargetPosition((int) low);
+                liftMotorLeft.setPower(1.0);
+                liftMotorRight.setTargetPosition((int) low);
+                liftMotorRight.setPower(1.0);
                 leftV4B.setPosition(0.83);
                 rightV4B.setPosition(0.0);
                 leftGuide.setPosition(0.0);
                 rightGuide.setPosition(0.3);
-            } else if (gamepad1.dpad_down) {
-                gripServo.setPosition(open);
-                targetInches = 0;
+            }
+            else if (gamepad1.dpad_down) {
+                liftMotorLeft.setTargetPosition(0);
+                liftMotorLeft.setPower(1.0);
+                liftMotorRight.setTargetPosition(0);
+                liftMotorRight.setPower(1.0);
                 leftV4B.setPosition(0.0);
                 rightV4B.setPosition(0.83);
                 leftGuide.setPosition(0.3);
                 rightGuide.setPosition(0.0);
             }
+
+            previousGamepad1.copy(currentGamepad1);
+            currentGamepad1.copy(gamepad1);
+
             // Cone stack heights
-            if (gamepad1.right_trigger > 0.2 && targetInches >= 1) {
+            if (currentGamepad1.right_bumper && !previousGamepad1.right_bumper && stackHeight >= 1) {
                 stackHeight = stackHeight - 1;
-                targetInches = stackHeight;
+                liftMotorLeft.setTargetPosition((int) (stackHeight * encoderMultiplier));
+                liftMotorLeft.setPower(1.0);
+                liftMotorRight.setTargetPosition((int) (stackHeight * encoderMultiplier));
+                liftMotorRight.setPower(1.0);
             }
 
-            if (gamepad1.right_bumper) {
+            if (currentGamepad1.left_bumper && !previousGamepad1.left_bumper) {
                 stackHeight = stackHeight + 1;
-                targetInches = stackHeight;
+                liftMotorLeft.setTargetPosition((int) (stackHeight * encoderMultiplier));
+                liftMotorLeft.setPower(1.0);
+                liftMotorRight.setTargetPosition((int) (stackHeight * encoderMultiplier));
+                liftMotorRight.setPower(1.0);
             }
 
-            int targetPosition = (int)(targetInches * 30.71283);
-            // Update pid controller
-            double leftCommand = control.update(targetPosition, liftMotorLeft.getCurrentPosition());
-            double rightCommand = control.update(targetPosition, liftMotorRight.getCurrentPosition());
-            leftCommand = Range.clip(leftCommand, -1, 1);
-            rightCommand = Range.clip(rightCommand, -1, 1);
-            // Assign PID output
-            dashboardTelemetry.addData("Command Left", leftCommand);
-            dashboardTelemetry.addData("Command Right", rightCommand);
-            liftMotorLeft.setPower(leftCommand);
-            liftMotorRight.setPower(rightCommand);
-             */
+            if (targetInches == 0 && averagedInches < 0.5) {
+                liftMotorLeft.setPower(0.0);
+            }
+
+            if (targetInches == 0 && averagedInches < 0.5) {
+                liftMotorRight.setPower(0.0);
+            }
+
+            if (Math.abs(targetInches - averagedInches) < 2) {
+                liftMotorLeft.setPositionPIDFCoefficients(20);
+                liftMotorRight.setPositionPIDFCoefficients(20);
+            }
+            else {
+                liftMotorLeft.setPositionPIDFCoefficients(15);
+                liftMotorRight.setPositionPIDFCoefficients(15);
+            }
 
             double y = -gamepad1.left_stick_y * multiplier; // Remember, this is reversed!
             double x = gamepad1.left_stick_x * 1.1 * multiplier; // Counteract imperfect strafing

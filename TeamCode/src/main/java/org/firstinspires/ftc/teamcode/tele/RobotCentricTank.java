@@ -21,9 +21,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 public class RobotCentricTank extends LinearOpMode {
 
     public static double encoderMultiplier = 30.71283;
-    public static double low = 1.0 * encoderMultiplier;
-    public static double medium = 11.0 * encoderMultiplier;
-    public static double high = 21.0 * encoderMultiplier;
+    public static double low = 2.0 * encoderMultiplier;
+    public static double medium = 12.0 * encoderMultiplier;
+    public static double high = 22.0 * encoderMultiplier;
     public static double open = 0.8;
     public static double closed = 1.0;
     double multiplier = 1.0;
@@ -90,10 +90,6 @@ public class RobotCentricTank extends LinearOpMode {
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
-
-            previousGamepad1.copy(currentGamepad1);
-            currentGamepad1.copy(gamepad1);
-
             double addedPosition = (liftMotorLeft.getCurrentPosition()) + (liftMotorRight.getCurrentPosition());
             double averagedPosition = (addedPosition / 2);
             double averagedInches = (averagedPosition / encoderMultiplier);
@@ -113,6 +109,8 @@ public class RobotCentricTank extends LinearOpMode {
             telemetry.addData("Right Current", rightCurrent);
             telemetry.addData("Target Inches", targetInches);
             telemetry.addData("PIDF Value", liftMotorLeft.getPIDFCoefficients(DcMotorEx.RunMode.RUN_TO_POSITION));
+
+            // Color sensing
             //NormalizedRGBA clawColors = clawSensor.getNormalizedColors();
             NormalizedRGBA guideColors = guideSensor.getNormalizedColors();
             //double clawDistance = clawDistanceSensor.getDistance(DistanceUnit.MM);
@@ -132,6 +130,7 @@ public class RobotCentricTank extends LinearOpMode {
                 gripServo.setPosition(open);
             }
 
+            // Speed multiplier
             if(gamepad1.left_trigger > 0.2 || gamepad1.right_trigger > 0.2) {
                 multiplier = 0.5;
             }
@@ -228,6 +227,10 @@ public class RobotCentricTank extends LinearOpMode {
                 leftGuide.setPosition(0.3);
                 rightGuide.setPosition(0.0);
             }
+
+            previousGamepad1.copy(currentGamepad1);
+            currentGamepad1.copy(gamepad1);
+
             // Cone stack heights
             if (currentGamepad1.right_bumper && !previousGamepad1.right_bumper && stackHeight >= 1) {
                 stackHeight = stackHeight - 1;
