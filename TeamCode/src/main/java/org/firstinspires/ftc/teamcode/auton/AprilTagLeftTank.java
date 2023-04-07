@@ -9,10 +9,8 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -47,6 +45,13 @@ public class AprilTagLeftTank extends LinearOpMode
     public static double scoreTime2 = 0.25;
     public static double open = 0.8;
     public static double closed = 1.0;
+    public static double intake = 0;
+    public static double deposit = 250;
+    public static double extended = 90;
+    public static double retracted = 0;
+
+    DcMotorEx liftMotorLeft;
+    DcMotorEx liftMotorRight;
 
     FtcDashboard dashboard = FtcDashboard.getInstance();
     Telemetry dashboardTelemetry = dashboard.getTelemetry();
@@ -89,23 +94,31 @@ public class AprilTagLeftTank extends LinearOpMode
 
         // Servo
         Servo gripServo = hardwareMap.servo.get("manipulator");
-        //Servo leftV4B = hardwareMap.servo.get("leftV4B");
-        //Servo rightV4B = hardwareMap.servo.get("rightV4B");
-        //Servo leftGuide = hardwareMap.servo.get("leftGuide");
-        //Servo rightGuide = hardwareMap.servo.get("rightGuide");
+        Servo leftV4B = hardwareMap.servo.get("leftV4B");
+        Servo rightV4B = hardwareMap.servo.get("rightV4B");
+        Servo leftGuide = hardwareMap.servo.get("leftGuide");
+        Servo rightGuide = hardwareMap.servo.get("rightGuide");
+
+        leftV4B.scaleRange(0, 300);
+        rightV4B.scaleRange(0, 300);
+        leftGuide.scaleRange(0, 300);
+        rightGuide.scaleRange(0, 300);
+
+        rightV4B.setDirection(Servo.Direction.REVERSE);
+        rightGuide.setDirection(Servo.Direction.REVERSE);
 
         // Declare our motors
         // Make sure your ID's match your configuration
-        DcMotor liftMotorLeft = hardwareMap.dcMotor.get("liftMotorLeft");
-        DcMotor liftMotorRight = hardwareMap.dcMotor.get("liftMotorRight");
+        liftMotorLeft = hardwareMap.get(DcMotorEx.class, "liftMotorLeft");
+        liftMotorRight = hardwareMap.get(DcMotorEx.class, "liftMotorRight");
 
         liftMotorLeft.setTargetPosition(0);
         liftMotorRight.setTargetPosition(0);
 
-        liftMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        liftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftMotorLeft.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        liftMotorRight.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
-        liftMotorRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        liftMotorLeft.setDirection(DcMotorEx.Direction.REVERSE);
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
@@ -134,10 +147,15 @@ public class AprilTagLeftTank extends LinearOpMode
 
         TrajectorySequence parkingOne = drive.trajectorySequenceBuilder(startPose)
                 .addTemporalMarker(() -> {
+                    gripServo.setPosition(closed);
                     liftMotorLeft.setTargetPosition((int) low);
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) low);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(deposit);
+                    rightV4B.setPosition(deposit);
+                    leftGuide.setPosition(extended);
+                    rightGuide.setPosition(extended);
                 })
 
                 // Go to score preload on low
@@ -152,6 +170,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) stack1);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(intake);
+                    rightV4B.setPosition(intake);
+                    leftGuide.setPosition(retracted);
+                    rightGuide.setPosition(retracted);
                 })
 
                 // Go to pick 1st cone off stack
@@ -177,6 +199,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) high);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(deposit);
+                    rightV4B.setPosition(deposit);
+                    leftGuide.setPosition(extended);
+                    rightGuide.setPosition(extended);
                 })
 
                 // Go to score 1st cone off stack on high
@@ -193,6 +219,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) stack2);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(intake);
+                    rightV4B.setPosition(intake);
+                    leftGuide.setPosition(retracted);
+                    rightGuide.setPosition(retracted);
                 })
 
                 // Go to pick 2nd cone off stack
@@ -216,6 +246,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) low);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(deposit);
+                    rightV4B.setPosition(deposit);
+                    leftGuide.setPosition(extended);
+                    rightGuide.setPosition(extended);
                 })
 
                 // Go to score 2nd cone off stack on low
@@ -231,6 +265,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) stack3);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(intake);
+                    rightV4B.setPosition(intake);
+                    leftGuide.setPosition(retracted);
+                    rightGuide.setPosition(retracted);
                 })
 
                 // Go to pick 3rd cone off stack
@@ -253,6 +291,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) high);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(deposit);
+                    rightV4B.setPosition(deposit);
+                    leftGuide.setPosition(extended);
+                    rightGuide.setPosition(extended);
                 })
 
                 // Go to score 3rd cone off stack on high
@@ -269,6 +311,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) stack4);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(intake);
+                    rightV4B.setPosition(intake);
+                    leftGuide.setPosition(retracted);
+                    rightGuide.setPosition(retracted);
                 })
 
                 // Go to pick 4th cone off stack
@@ -292,6 +338,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) medium);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(deposit);
+                    rightV4B.setPosition(deposit);
+                    leftGuide.setPosition(extended);
+                    rightGuide.setPosition(extended);
                 })
 
                 // Go to score 4th cone off stack on medium
@@ -308,6 +358,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) stack5);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(intake);
+                    rightV4B.setPosition(intake);
+                    leftGuide.setPosition(retracted);
+                    rightGuide.setPosition(retracted);
                 })
 
                 // Go to pick 5th cone off stack
@@ -324,6 +378,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) high);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(deposit);
+                    rightV4B.setPosition(deposit);
+                    leftGuide.setPosition(extended);
+                    rightGuide.setPosition(extended);
                 })
 
                 // Go to score 5th cone off stack on high
@@ -340,6 +398,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition(0);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(intake);
+                    rightV4B.setPosition(intake);
+                    leftGuide.setPosition(retracted);
+                    rightGuide.setPosition(retracted);
                 })
 
                 // Go to park
@@ -353,10 +415,15 @@ public class AprilTagLeftTank extends LinearOpMode
 
         TrajectorySequence parkingTwo = drive.trajectorySequenceBuilder(startPose)
                 .addTemporalMarker(() -> {
+                    gripServo.setPosition(closed);
                     liftMotorLeft.setTargetPosition((int) low);
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) low);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(deposit);
+                    rightV4B.setPosition(deposit);
+                    leftGuide.setPosition(extended);
+                    rightGuide.setPosition(extended);
                 })
 
                 // Go to score preload on low
@@ -371,6 +438,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) stack1);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(intake);
+                    rightV4B.setPosition(intake);
+                    leftGuide.setPosition(retracted);
+                    rightGuide.setPosition(retracted);
                 })
 
                 // Go to pick 1st cone off stack
@@ -396,6 +467,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) high);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(deposit);
+                    rightV4B.setPosition(deposit);
+                    leftGuide.setPosition(extended);
+                    rightGuide.setPosition(extended);
                 })
 
                 // Go to score 1st cone off stack on high
@@ -412,6 +487,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) stack2);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(intake);
+                    rightV4B.setPosition(intake);
+                    leftGuide.setPosition(retracted);
+                    rightGuide.setPosition(retracted);
                 })
 
                 // Go to pick 2nd cone off stack
@@ -435,6 +514,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) low);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(deposit);
+                    rightV4B.setPosition(deposit);
+                    leftGuide.setPosition(extended);
+                    rightGuide.setPosition(extended);
                 })
 
                 // Go to score 2nd cone off stack on low
@@ -450,6 +533,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) stack3);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(intake);
+                    rightV4B.setPosition(intake);
+                    leftGuide.setPosition(retracted);
+                    rightGuide.setPosition(retracted);
                 })
 
                 // Go to pick 3rd cone off stack
@@ -472,6 +559,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) high);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(deposit);
+                    rightV4B.setPosition(deposit);
+                    leftGuide.setPosition(extended);
+                    rightGuide.setPosition(extended);
                 })
 
                 // Go to score 3rd cone off stack on high
@@ -488,6 +579,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) stack4);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(intake);
+                    rightV4B.setPosition(intake);
+                    leftGuide.setPosition(retracted);
+                    rightGuide.setPosition(retracted);
                 })
 
                 // Go to pick 4th cone off stack
@@ -511,6 +606,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) medium);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(deposit);
+                    rightV4B.setPosition(deposit);
+                    leftGuide.setPosition(extended);
+                    rightGuide.setPosition(extended);
                 })
 
                 // Go to score 4th cone off stack on medium
@@ -527,6 +626,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) stack5);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(intake);
+                    rightV4B.setPosition(intake);
+                    leftGuide.setPosition(retracted);
+                    rightGuide.setPosition(retracted);
                 })
 
                 // Go to pick 5th cone off stack
@@ -543,6 +646,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) high);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(deposit);
+                    rightV4B.setPosition(deposit);
+                    leftGuide.setPosition(extended);
+                    rightGuide.setPosition(extended);
                 })
 
                 // Go to score 5th cone off stack on high
@@ -559,6 +666,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition(0);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(intake);
+                    rightV4B.setPosition(intake);
+                    leftGuide.setPosition(retracted);
+                    rightGuide.setPosition(retracted);
                 })
 
                 // Go to park
@@ -571,10 +682,15 @@ public class AprilTagLeftTank extends LinearOpMode
 
         TrajectorySequence parkingThree = drive.trajectorySequenceBuilder(startPose)
                 .addTemporalMarker(() -> {
+                    gripServo.setPosition(closed);
                     liftMotorLeft.setTargetPosition((int) low);
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) low);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(deposit);
+                    rightV4B.setPosition(deposit);
+                    leftGuide.setPosition(extended);
+                    rightGuide.setPosition(extended);
                 })
 
                 // Go to score preload on low
@@ -589,6 +705,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) stack1);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(intake);
+                    rightV4B.setPosition(intake);
+                    leftGuide.setPosition(retracted);
+                    rightGuide.setPosition(retracted);
                 })
 
                 // Go to pick 1st cone off stack
@@ -614,6 +734,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) high);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(deposit);
+                    rightV4B.setPosition(deposit);
+                    leftGuide.setPosition(extended);
+                    rightGuide.setPosition(extended);
                 })
 
                 // Go to score 1st cone off stack on high
@@ -630,6 +754,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) stack2);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(intake);
+                    rightV4B.setPosition(intake);
+                    leftGuide.setPosition(retracted);
+                    rightGuide.setPosition(retracted);
                 })
 
                 // Go to pick 2nd cone off stack
@@ -653,6 +781,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) low);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(deposit);
+                    rightV4B.setPosition(deposit);
+                    leftGuide.setPosition(extended);
+                    rightGuide.setPosition(extended);
                 })
 
                 // Go to score 2nd cone off stack on low
@@ -668,6 +800,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) stack3);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(intake);
+                    rightV4B.setPosition(intake);
+                    leftGuide.setPosition(retracted);
+                    rightGuide.setPosition(retracted);
                 })
 
                 // Go to pick 3rd cone off stack
@@ -690,6 +826,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) high);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(deposit);
+                    rightV4B.setPosition(deposit);
+                    leftGuide.setPosition(extended);
+                    rightGuide.setPosition(extended);
                 })
 
                 // Go to score 3rd cone off stack on high
@@ -706,6 +846,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) stack4);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(intake);
+                    rightV4B.setPosition(intake);
+                    leftGuide.setPosition(retracted);
+                    rightGuide.setPosition(retracted);
                 })
 
                 // Go to pick 4th cone off stack
@@ -729,6 +873,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) medium);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(deposit);
+                    rightV4B.setPosition(deposit);
+                    leftGuide.setPosition(extended);
+                    rightGuide.setPosition(extended);
                 })
 
                 // Go to score 4th cone off stack on medium
@@ -745,6 +893,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) stack5);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(intake);
+                    rightV4B.setPosition(intake);
+                    leftGuide.setPosition(retracted);
+                    rightGuide.setPosition(retracted);
                 })
 
                 // Go to pick 5th cone off stack
@@ -761,6 +913,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition((int) high);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(deposit);
+                    rightV4B.setPosition(deposit);
+                    leftGuide.setPosition(extended);
+                    rightGuide.setPosition(extended);
                 })
 
                 // Go to score 5th cone off stack on high
@@ -777,6 +933,10 @@ public class AprilTagLeftTank extends LinearOpMode
                     liftMotorLeft.setPower(1.0);
                     liftMotorRight.setTargetPosition(0);
                     liftMotorRight.setPower(1.0);
+                    leftV4B.setPosition(intake);
+                    rightV4B.setPosition(intake);
+                    leftGuide.setPosition(retracted);
+                    rightGuide.setPosition(retracted);
                 })
 
                 // Go to park

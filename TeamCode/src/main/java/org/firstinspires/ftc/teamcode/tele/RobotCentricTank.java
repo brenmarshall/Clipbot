@@ -26,6 +26,10 @@ public class RobotCentricTank extends LinearOpMode {
     public static double high = 22.0 * encoderMultiplier;
     public static double open = 0.8;
     public static double closed = 1.0;
+    public static double intake = 0;
+    public static double deposit = 250;
+    public static double extended = 90;
+    public static double retracted = 0;
     double multiplier = 1.0;
     double stackHeight = 0.0;
     double beforeTime = 0;
