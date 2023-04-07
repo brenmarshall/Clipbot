@@ -21,18 +21,18 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 public class RobotCentricTank extends LinearOpMode {
 
     public static double encoderMultiplier = 30.71283;
-    public static double low = 2.0 * encoderMultiplier;
-    public static double medium = 12.0 * encoderMultiplier;
-    public static double high = 22.0 * encoderMultiplier;
+    public static double low = 1 * encoderMultiplier;
+    public static double medium = 11 * encoderMultiplier;
+    public static double high = 21 * encoderMultiplier;
     public static double open = 0.8;
     public static double closed = 1.0;
-    public static double intake = 0;
-    public static double deposit = 250;
-    public static double extended = 90;
-    public static double retracted = 0;
+    public static double intake = 0.0;
+    public static double deposit = 0.83;
+    public static double extended = 0.3;
+    public static double retracted = 0.0;
     double multiplier = 1.0;
     double stackHeight = 0.0;
-    double beforeTime = 0;
+    double beforeTime = 0.0;
     boolean drive = true;
 
     ElapsedTime time = new ElapsedTime();
@@ -57,6 +57,9 @@ public class RobotCentricTank extends LinearOpMode {
         Servo rightV4B = hardwareMap.servo.get("rightV4B");
         Servo leftGuide = hardwareMap.servo.get("leftGuide");
         Servo rightGuide = hardwareMap.servo.get("rightGuide");
+
+        rightV4B.setDirection(Servo.Direction.REVERSE);
+        rightGuide.setDirection(Servo.Direction.REVERSE);
 
         // Declare our motors
         // Make sure your ID's match your configuration
@@ -166,10 +169,10 @@ public class RobotCentricTank extends LinearOpMode {
                  rightV4B.setPosition(0.83);
                  leftGuide.setPosition(0.0);
                  rightGuide.setPosition(0.3);
-                 liftMotorLeft.setTargetPosition(0);
-                 liftMotorLeft.setPower(1.0);
-                 liftMotorRight.setTargetPosition(0);
-                 liftMotorRight.setPower(1.0);
+                leftV4B.setPosition(intake);
+                rightV4B.setPosition(intake);
+                leftGuide.setPosition(retracted);
+                rightGuide.setPosition(retracted);
                  drive = true;
                  beforeTime = -1;
             }
@@ -180,11 +183,11 @@ public class RobotCentricTank extends LinearOpMode {
 
             // Guide
             if (gamepad1.dpad_left) {
-                leftGuide.setPosition(0.0);
-                rightGuide.setPosition(0.3);
+                leftGuide.setPosition(retracted);
+                rightGuide.setPosition(retracted);
             } else if (gamepad1.dpad_up) {
-                leftGuide.setPosition(0.3);
-                rightGuide.setPosition(0.0);
+                leftGuide.setPosition(extended);
+                rightGuide.setPosition(extended);
             }
 
             // Auto heights
@@ -194,10 +197,10 @@ public class RobotCentricTank extends LinearOpMode {
                 liftMotorLeft.setPower(1.0);
                 liftMotorRight.setTargetPosition((int) high);
                 liftMotorRight.setPower(1.0);
-                leftV4B.setPosition(0.83);
-                rightV4B.setPosition(0.0);
-                leftGuide.setPosition(0.0);
-                rightGuide.setPosition(0.3);
+                leftV4B.setPosition(deposit);
+                rightV4B.setPosition(deposit);
+                leftGuide.setPosition(extended);
+                rightGuide.setPosition(extended);
             }
             else if (gamepad1.b) {
                 gripServo.setPosition(closed);
@@ -205,10 +208,10 @@ public class RobotCentricTank extends LinearOpMode {
                 liftMotorLeft.setPower(1.0);
                 liftMotorRight.setTargetPosition((int) medium);
                 liftMotorRight.setPower(1.0);
-                leftV4B.setPosition(0.83);
-                rightV4B.setPosition(0.0);
-                leftGuide.setPosition(0.0);
-                rightGuide.setPosition(0.3);
+                leftV4B.setPosition(deposit);
+                rightV4B.setPosition(deposit);
+                leftGuide.setPosition(extended);
+                rightGuide.setPosition(extended);
             }
             else if (gamepad1.a) {
                 gripServo.setPosition(closed);
@@ -216,20 +219,20 @@ public class RobotCentricTank extends LinearOpMode {
                 liftMotorLeft.setPower(1.0);
                 liftMotorRight.setTargetPosition((int) low);
                 liftMotorRight.setPower(1.0);
-                leftV4B.setPosition(0.83);
-                rightV4B.setPosition(0.0);
-                leftGuide.setPosition(0.0);
-                rightGuide.setPosition(0.3);
+                leftV4B.setPosition(deposit);
+                rightV4B.setPosition(deposit);
+                leftGuide.setPosition(extended);
+                rightGuide.setPosition(extended);
             }
             else if (gamepad1.dpad_down) {
                 liftMotorLeft.setTargetPosition(0);
                 liftMotorLeft.setPower(1.0);
                 liftMotorRight.setTargetPosition(0);
                 liftMotorRight.setPower(1.0);
-                leftV4B.setPosition(0.0);
-                rightV4B.setPosition(0.83);
-                leftGuide.setPosition(0.3);
-                rightGuide.setPosition(0.0);
+                leftV4B.setPosition(intake);
+                rightV4B.setPosition(intake);
+                leftGuide.setPosition(retracted);
+                rightGuide.setPosition(retracted);
             }
 
             previousGamepad1.copy(currentGamepad1);

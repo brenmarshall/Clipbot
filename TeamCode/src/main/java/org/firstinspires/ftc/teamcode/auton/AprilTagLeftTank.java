@@ -29,15 +29,16 @@ import java.util.ArrayList;
 @Autonomous(name="1+5 LEFT SIDE TANK")
 public class AprilTagLeftTank extends LinearOpMode
 {
-    public static double low = 1.0 * 30.71283;
-    public static double medium = 11.0 * 30.71283;
-    public static double high = 21.0 * 30.71283;
-    public static double stack1 = 4 * 30.71283;
-    public static double stack2 = 3 * 30.71283;
-    public static double stack3 = 2 * 30.71283;
-    public static double stack4 = 1 * 30.71283;
-    public static double stack5 = 0 * 30.71283;
-    public static double stackLift = 5 * 30.71283;
+    public static double encoderMultiplier = 30.71283;
+    public static double low = 1 * encoderMultiplier;
+    public static double medium = 11 * encoderMultiplier;
+    public static double high = 21 * encoderMultiplier;
+    public static double stack1 = 4 * encoderMultiplier;
+    public static double stack2 = 3 * encoderMultiplier;
+    public static double stack3 = 2 * encoderMultiplier;
+    public static double stack4 = 1 * encoderMultiplier;
+    public static double stack5 = 0 * encoderMultiplier;
+    public static double stackLift = 5 * encoderMultiplier;
     public static double stackTime1 = 0.25;
     public static double stackTime2 = 0.25;
     public static double stackTime3 = 0.25;
