@@ -20,6 +20,8 @@ public class Clipper extends SubsystemBase {
     private final PIDFController clipperDriveController;
 
     private double targetClipperPosition = 0.0;
+    public final double clipWidth = 2.54; // cm
+    public int magPosition = 0;
     private boolean isHoming = true;
 
     public Clipper(Bot bot) {
@@ -58,6 +60,10 @@ public class Clipper extends SubsystemBase {
         targetClipperPosition = target;
     }
 
+    public double getClipperDrivePosition() {
+        return clipperDriveMotor.getCurrentPosition() / Config.clipperDrive_ticksPerCM;
+    }
+
     public void setClipperDrivePower(double power) {
         clipperDriveMotor.setPower(power);
     }
@@ -73,6 +79,10 @@ public class Clipper extends SubsystemBase {
     public void resetClipperEncoder() {
         clipperDriveMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         clipperDriveMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
+    public void incrementMagPosition() {
+        magPosition++;
     }
 
     public void setClipperServoPosition(double position) {

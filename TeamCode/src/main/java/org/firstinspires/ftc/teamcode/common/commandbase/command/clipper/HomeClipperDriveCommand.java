@@ -30,6 +30,7 @@ public class HomeClipperDriveCommand extends CommandBase {
     public void end(boolean interrupted) {
         clipper.setClipperDrivePower(0);
         clipper.resetClipperEncoder();
+        clipper.setClipperDrivePosition(0.0);
         clipper.setIsHoming(false);
     }
 }

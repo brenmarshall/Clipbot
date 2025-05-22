@@ -73,6 +73,10 @@ public class Intake extends SubsystemBase {
         targetIntakeSlidesPosition = position;
     }
 
+    public double getIntakeSlidesPosition() {
+        return intakeSlidesMotor.getCurrentPosition() / Config.intakeSlides_ticksPerCM;
+    }
+
     private double mapVoltageToDegrees(double voltage) {
         double maxVoltage = 3.3;
         return (voltage / maxVoltage) * 360;

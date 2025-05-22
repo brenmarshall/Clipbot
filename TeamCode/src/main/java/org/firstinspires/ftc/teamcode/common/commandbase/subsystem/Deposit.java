@@ -50,6 +50,10 @@ public class Deposit extends SubsystemBase {
         targetDepositSlidesPosition = target;
     }
 
+    public double getDepositSlidesPosition() {
+        return depositSlidesMotor.getCurrentPosition() / Config.depositSlides_ticksPerCM;
+    }
+
     public void setDepositArmPosition(double position) {
         DepositArmServo.setPosition(position);
     }
