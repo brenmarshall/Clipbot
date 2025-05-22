@@ -11,11 +11,11 @@ import org.firstinspires.ftc.teamcode.common.Config;
 
 public class Clipper extends SubsystemBase {
     private final Bot bot;
-    private final DcMotorEx clipperDriveMotor;
-    private final DigitalChannel clipperLimitSwitch;
-    private final Servo clipperServo;
-    private final Servo clipmagPivotServo;
-    private final Servo clipmagServo;
+    private final DcMotorEx clipperDriveMotor; // bare motor
+    private final DigitalChannel clipperLimitSwitch; // limit switch
+    private final Servo clipperServo; // gb torque
+    private final Servo clipmagPivotServo; // gb torque
+    private final Servo clipmagServo; // axon micro/agfrc sa30
 
     private final PIDFController clipperDriveController;
 

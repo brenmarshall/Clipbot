@@ -13,12 +13,12 @@ import org.firstinspires.ftc.teamcode.common.Config;
 public class Intake extends SubsystemBase {
 
     private final Bot bot;
-    private final DcMotorEx intakeSlidesMotor;
-    private final CRServo turretServo;
-    private final AnalogInput turretEncoder;
-    private final Servo intakeArmServo;
-    private final Servo intakeWristServo;
-    private final Servo intakeClawServo;
+    private final DcMotorEx intakeSlidesMotor; // bare motor
+    private final CRServo turretServo; // axon mini/agfrc sa33
+    private final AnalogInput turretEncoder; // custom mt6701 board
+    private final Servo intakeArmServo; // axon mini/agfrc sa33 or gb torque
+    private final Servo intakeWristServo; // gb speed
+    private final Servo intakeClawServo; // axon micro/agfrc sa30
 
     private final PIDFController intakeSlidesController;
     private final PIDFController turretController;

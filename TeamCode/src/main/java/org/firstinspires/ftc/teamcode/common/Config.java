@@ -9,7 +9,7 @@ public class Config {
 
     public static double depositSlides_kP = 0.01, depositSlides_kI = 0.0, depositSlides_kD = 0.0, depositSlides_kF = 0.0, depositSlides_tolerance = 10.0, depositSlides_ticksPerCM = 0.0;
 
-    public static double clipMagOffset = 0.0, clipperClipPosition = 0.0;
+    public static double clipMagOffset = 0.0, clipperClipPosition = 0.0, clipperSetPosition = 0.0;
 
     public static double clippingPosition = 0.0, pickupPosition = 0.0;
 }

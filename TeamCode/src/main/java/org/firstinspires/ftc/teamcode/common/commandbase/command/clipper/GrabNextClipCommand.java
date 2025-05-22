@@ -15,6 +15,11 @@ public class GrabNextClipCommand extends SequentialCommandGroup {
                 }),
                 new SetClipperDrivePositionCommand(bot.getClipper(), bot.getClipper().magPosition),
                 new WaitCommand(500),
+                new SetClipperDrivePositionCommand(bot.getClipper(), Config.clipperSetPosition),
+                new InstantCommand(() -> {
+                    bot.getClipper().setClipperServoPosition(Config.clippingPosition);
+                }),
+                new WaitCommand(500),
                 new SetClipperDrivePositionCommand(bot.getClipper(), Config.clipperClipPosition)
         );
     }
