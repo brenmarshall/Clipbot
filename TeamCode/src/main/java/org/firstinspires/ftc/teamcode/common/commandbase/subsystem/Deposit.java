@@ -13,7 +13,7 @@ public class Deposit extends SubsystemBase {
     private final DcMotorEx depositSlidesMotor; // bare motor
     private final Servo DepositArmServo; // axon mini/agfrc sa33
     private final Servo DepositWristServo; // axon mini/agfrc sa33 or gb torque
-    private final Servo DepositClawServo; // axon micro/agfrc sa30
+    private final Servo DepositClawServo; // agfrc sa30
 
     private final PIDFController depositSlidesController;
 

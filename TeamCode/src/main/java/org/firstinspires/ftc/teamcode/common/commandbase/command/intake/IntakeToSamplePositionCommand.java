@@ -17,6 +17,6 @@ public class IntakeToSamplePositionCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        intake.setIntakeWristPosition(target.getHeading());
+        intake.setIntakeWristAngle(target.getHeading());
     }
 }

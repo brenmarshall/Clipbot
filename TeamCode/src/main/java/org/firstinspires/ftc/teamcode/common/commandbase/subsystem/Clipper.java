@@ -15,7 +15,7 @@ public class Clipper extends SubsystemBase {
     private final DigitalChannel clipperLimitSwitch; // limit switch
     private final Servo clipperServo; // gb torque
     private final Servo clipmagPivotServo; // gb torque
-    private final Servo clipmagServo; // axon micro/agfrc sa30
+    private final Servo clipmagServo; // agfrc sa30
 
     private final PIDFController clipperDriveController;
 

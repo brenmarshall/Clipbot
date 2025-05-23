@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.common.Bot;
 import org.firstinspires.ftc.teamcode.common.Config;
+import org.firstinspires.ftc.teamcode.common.util.ServoFunctions;
 
 public class Intake extends SubsystemBase {
 
@@ -18,13 +19,20 @@ public class Intake extends SubsystemBase {
     private final AnalogInput turretEncoder; // custom mt6701 board
     private final Servo intakeArmServo; // axon mini/agfrc sa33 or gb torque
     private final Servo intakeWristServo; // gb speed
-    private final Servo intakeClawServo; // axon micro/agfrc sa30
+    private final Servo intakeClawServo; // agfrc sa30
 
     private final PIDFController intakeSlidesController;
     private final PIDFController turretController;
 
     private double targetIntakeSlidesPosition = 0.0;
     private double targetTurretAngle = 0.0;
+
+    private final double INTAKE_ARM_SERVO_RANGE = 270.0;
+    private final double INTAKE_ARM_MIN_ANGLE = 0.0;
+    private final double INTAKE_ARM_MAX_ANGLE = 115.0;
+    private final double INTAKE_WRIST_SERVO_RANGE = 270.0;
+    private final double INTAKE_WRIST_MIN_ANGLE = -90.0;
+    private final double INTAKE_WRIST_MAX_ANGLE = 90.0;
 
     public Intake(Bot bot) {
         this.bot = bot;
@@ -91,12 +99,12 @@ public class Intake extends SubsystemBase {
         targetTurretAngle = angle;
     }
 
-    public void setIntakeArmPosition(double position) {
-        intakeArmServo.setPosition(position);
+    public void setIntakeArmAngle(double angle) {
+        intakeArmServo.setPosition(ServoFunctions.degreesToServoPosition((ServoFunctions.clampAngleDegrees(angle, INTAKE_ARM_MIN_ANGLE, INTAKE_ARM_MAX_ANGLE)), INTAKE_ARM_SERVO_RANGE));
     }
 
-    public void setIntakeWristPosition(double position) {
-        intakeWristServo.setPosition(position);
+    public void setIntakeWristAngle(double angle) {
+        intakeWristServo.setPosition(ServoFunctions.degreesToServoPosition((ServoFunctions.clampAngleDegrees(angle, INTAKE_WRIST_MIN_ANGLE, INTAKE_WRIST_MAX_ANGLE)), INTAKE_WRIST_SERVO_RANGE));
     }
 
     public void setIntakeClawPosition(double position) {
