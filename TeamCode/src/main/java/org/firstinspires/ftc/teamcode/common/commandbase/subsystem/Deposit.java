@@ -6,14 +6,14 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.common.Bot;
-import org.firstinspires.ftc.teamcode.common.Config;
+import org.firstinspires.ftc.teamcode.common.Configuration;
 
 public class Deposit extends SubsystemBase {
     private final Bot bot;
-    private final DcMotorEx depositSlidesMotor; // bare motor
-    private final Servo DepositArmServo; // axon mini/agfrc sa33
-    private final Servo DepositWristServo; // axon mini/agfrc sa33 or gb torque
-    private final Servo DepositClawServo; // agfrc sa30
+    private final DcMotorEx depositSlidesMotor; // bare motor HAVE
+    private final Servo DepositArmServo; // axon mini/agfrc sa33 NEED
+    private final Servo DepositWristServo; // gb torque NEED
+    private final Servo DepositClawServo; // agfrc sa30 NEED
 
     private final PIDFController depositSlidesController;
 
@@ -30,17 +30,17 @@ public class Deposit extends SubsystemBase {
         depositSlidesMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
         depositSlidesController = new PIDFController(
-                Config.depositSlides_kP, // kP
-                Config.depositSlides_kI, // kI
-                Config.depositSlides_kD, // kD
-                Config.depositSlides_kF  // kF
+                Configuration.depositSlides_kP, // kP
+                Configuration.depositSlides_kI, // kI
+                Configuration.depositSlides_kD, // kD
+                Configuration.depositSlides_kF  // kF
         );
     }
 
     public void periodic() {
         double depositSlidesPower = depositSlidesController.calculate(
                 depositSlidesMotor.getCurrentPosition(),
-                targetDepositSlidesPosition * Config.depositSlides_ticksPerCM
+                targetDepositSlidesPosition * Configuration.depositSlides_ticksPerCM
         );
 
         depositSlidesMotor.setPower(depositSlidesPower);
@@ -51,7 +51,7 @@ public class Deposit extends SubsystemBase {
     }
 
     public double getDepositSlidesPosition() {
-        return depositSlidesMotor.getCurrentPosition() / Config.depositSlides_ticksPerCM;
+        return depositSlidesMotor.getCurrentPosition() / Configuration.depositSlides_ticksPerCM;
     }
 
     public void setDepositArmPosition(double position) {

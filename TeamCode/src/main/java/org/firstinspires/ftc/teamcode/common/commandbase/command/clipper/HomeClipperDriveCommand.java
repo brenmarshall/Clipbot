@@ -18,7 +18,7 @@ public class HomeClipperDriveCommand extends CommandBase {
     @Override
     public void initialize() {
         clipper.setIsHoming(true);
-        clipper.setClipperDrivePower(0.25);
+        clipper.setClipperDrivePower(-0.5);
     }
 
     @Override
@@ -28,7 +28,7 @@ public class HomeClipperDriveCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        clipper.setClipperDrivePower(0);
+        clipper.setClipperDrivePower(0.0);
         clipper.resetClipperEncoder();
         clipper.setClipperDrivePosition(0.0);
         clipper.setIsHoming(false);

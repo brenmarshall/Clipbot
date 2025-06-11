@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.common.commandbase.command.clipper;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 
-import org.firstinspires.ftc.teamcode.common.Config;
+import org.firstinspires.ftc.teamcode.common.Configuration;
 import org.firstinspires.ftc.teamcode.common.commandbase.subsystem.Clipper;
 
 public class SetClipperDrivePositionCommand extends CommandBase {
@@ -17,7 +17,7 @@ public class SetClipperDrivePositionCommand extends CommandBase {
 
     public SetClipperDrivePositionCommand(Clipper clipper, int position) {
         this.clipper = clipper;
-        this.position = (position * clipper.clipWidth) + Config.clipMagOffset;
+        this.position = (position * clipper.clipWidth) + Configuration.clipMagOffset;
         addRequirements(clipper);
     }
 
@@ -28,6 +28,6 @@ public class SetClipperDrivePositionCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return (Math.abs(clipper.getClipperDrivePosition() - position) <= Config.clipperDrive_tolerance);
+        return (Math.abs(clipper.getClipperDrivePosition() - position) <= Configuration.clipperDrive_tolerance);
     }
 }

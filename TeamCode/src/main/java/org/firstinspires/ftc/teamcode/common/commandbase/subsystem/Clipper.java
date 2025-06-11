@@ -7,22 +7,32 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.common.Bot;
-import org.firstinspires.ftc.teamcode.common.Config;
+import org.firstinspires.ftc.teamcode.common.Configuration;
 
 public class Clipper extends SubsystemBase {
     private final Bot bot;
-    private final DcMotorEx clipperDriveMotor; // bare motor
-    private final DigitalChannel clipperLimitSwitch; // limit switch
-    private final Servo clipperServo; // gb torque
-    private final Servo clipmagPivotServo; // gb torque
-    private final Servo clipmagServo; // agfrc sa30
+    private final DcMotorEx clipperDriveMotor; // bare motor HAVE
+    private final DigitalChannel clipperLimitSwitch; // limit switch HAVE
+    private final Servo clipperServo; // gb speed HAVE
+    private final Servo clipmagPivotServo; // gb torque HAVE
+    private final Servo clipmagServo; // agfrc sa30 NEED
 
     private final PIDFController clipperDriveController;
 
     private double targetClipperPosition = 0.0;
     public final double clipWidth = 2.54; // cm
-    public int magPosition = 0;
+    public int magPosition = 7;
     private boolean isHoming = true;
+
+    public enum ClipperState {
+        CLIP,
+        SET
+    }
+
+    public enum ClipMagState {
+        UP,
+        DOWN
+    }
 
     public Clipper(Bot bot) {
         this.bot = bot;
@@ -36,11 +46,14 @@ public class Clipper extends SubsystemBase {
         clipperDriveMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         clipperDriveMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
+        clipperServo.setDirection(Servo.Direction.REVERSE);
+        clipmagPivotServo.setDirection(Servo.Direction.REVERSE);
+
         clipperDriveController = new PIDFController(
-                Config.clipperDrive_kP, // kP
-                Config.clipperDrive_kI, // kI
-                Config.clipperDrive_kD, // kD
-                Config.clipperDrive_kF  // kF
+                Configuration.clipperDrive_kP, // kP
+                Configuration.clipperDrive_kI, // kI
+                Configuration.clipperDrive_kD, // kD
+                Configuration.clipperDrive_kF  // kF
         );
     }
 
@@ -48,12 +61,17 @@ public class Clipper extends SubsystemBase {
         if (!isHoming) {
             double clipperDrivePower = clipperDriveController.calculate(
                     clipperDriveMotor.getCurrentPosition(),
-                    targetClipperPosition * Config.clipperDrive_ticksPerCM
+                    targetClipperPosition * Configuration.clipperDrive_ticksPerCM
             );
 
             clipperDriveMotor.setPower(clipperDrivePower);
         }
 
+        bot.telem.addData("Clipper Limit Switch", isClipperLimitSwitchPressed() ? "Pressed" : "Not Pressed");
+        bot.telem.addData("Is Homing", isHoming ? "Yes" : "No");
+        bot.telem.addData("Clipper Drive Position", getClipperDrivePosition());
+        bot.telem.addData("Target Clipper Position", targetClipperPosition);
+        bot.telem.update();
     }
 
     public void setClipperDrivePosition(double target) {
@@ -61,7 +79,7 @@ public class Clipper extends SubsystemBase {
     }
 
     public double getClipperDrivePosition() {
-        return clipperDriveMotor.getCurrentPosition() / Config.clipperDrive_ticksPerCM;
+        return clipperDriveMotor.getCurrentPosition() / Configuration.clipperDrive_ticksPerCM;
     }
 
     public void setClipperDrivePower(double power) {
@@ -69,7 +87,7 @@ public class Clipper extends SubsystemBase {
     }
 
     public boolean isClipperLimitSwitchPressed() {
-        return !clipperLimitSwitch.getState();
+        return clipperLimitSwitch.getState();
     }
 
     public void setIsHoming(boolean isHoming) {
@@ -85,12 +103,26 @@ public class Clipper extends SubsystemBase {
         magPosition++;
     }
 
-    public void setClipperServoPosition(double position) {
-        clipperServo.setPosition(position);
+    public void setClipperPosition (ClipperState state) {
+        switch (state) {
+            case CLIP:
+                clipperServo.setPosition(Configuration.clipperClipPosition);
+                break;
+            case SET:
+                clipperServo.setPosition(Configuration.clipperSetPosition);
+                break;
+        }
     }
 
-    public void setClipmagPivotServoPosition(double position) {
-        clipmagPivotServo.setPosition(position);
+    public void setClipMagPosition(ClipMagState state) {
+        switch (state) {
+            case UP:
+                clipmagPivotServo.setPosition(Configuration.clipMagUp);
+                break;
+            case DOWN:
+                clipmagPivotServo.setPosition(Configuration.clipMagDown);
+                break;
+        }
     }
 
     public void setClipmagServoPosition(double position) {

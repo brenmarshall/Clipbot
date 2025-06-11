@@ -1,0 +1,126 @@
+package org.firstinspires.ftc.teamcode.opmode.teleop;
+
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.arcrobotics.ftclib.command.CommandOpMode;
+import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.button.Button;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+
+import org.firstinspires.ftc.teamcode.common.Bot;
+import org.firstinspires.ftc.teamcode.common.Configuration;
+import org.firstinspires.ftc.teamcode.common.commandbase.command.clipper.HomeClipperDriveCommand;
+import org.firstinspires.ftc.teamcode.common.commandbase.command.clipper.ManualClipperDriveCommand;
+import org.firstinspires.ftc.teamcode.common.commandbase.command.clipper.SetClipMagPositionCommand;
+import org.firstinspires.ftc.teamcode.common.commandbase.command.clipper.SetClipperDrivePositionCommand;
+import org.firstinspires.ftc.teamcode.common.commandbase.command.clipper.SetClipperPositionCommand;
+import org.firstinspires.ftc.teamcode.common.commandbase.command.clipper.TestClipCommand;
+import org.firstinspires.ftc.teamcode.common.commandbase.subsystem.Clipper;
+import org.firstinspires.ftc.teamcode.common.util.ExtendedGamepadButton;
+import org.firstinspires.ftc.teamcode.common.util.ExtendedGamepadEx;
+import org.firstinspires.ftc.teamcode.common.util.ExtendedGamepadKeys;
+
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Test", group = "TeleOp")
+public class Test extends CommandOpMode {
+
+    private Bot bot;
+    //private Intake intake;
+    private Clipper clipper;
+    //private Deposit deposit;
+
+    private ExtendedGamepadEx driverGamepad;
+    private ExtendedGamepadEx tuningGamepad;
+
+    private MultipleTelemetry telem;
+
+    public void initialize() {
+
+        CommandScheduler.getInstance().reset();
+
+        telem = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
+        driverGamepad = new ExtendedGamepadEx(gamepad1);
+        tuningGamepad = new ExtendedGamepadEx(gamepad2);
+
+        bot = new Bot(telem, hardwareMap, gamepad1);
+
+        //region Drivetrain
+
+        //endregion
+
+        //region Intake
+
+        //endregion
+
+        //region Clipper
+
+        clipper = bot.getClipper();
+
+        Button clipPosition = (new ExtendedGamepadButton(driverGamepad, ExtendedGamepadKeys.Button.CROSS))
+                .whenPressed(
+                    new SetClipperPositionCommand(clipper, Clipper.ClipperState.CLIP)
+                );
+
+        Button setPosition = (new ExtendedGamepadButton(driverGamepad, ExtendedGamepadKeys.Button.CIRCLE))
+                .whenPressed(
+                    new SetClipperPositionCommand(clipper, Clipper.ClipperState.SET)
+                );
+
+        Button upPosition = (new ExtendedGamepadButton(driverGamepad, ExtendedGamepadKeys.Button.TRIANGLE))
+                .whenPressed(
+                    new SetClipMagPositionCommand(clipper, Clipper.ClipMagState.UP)
+                );
+
+        Button downPosition = (new ExtendedGamepadButton(driverGamepad, ExtendedGamepadKeys.Button.SQUARE))
+                .whenPressed(
+                    new SetClipMagPositionCommand(clipper, Clipper.ClipMagState.DOWN)
+                );
+
+        Button homeClipper = (new ExtendedGamepadButton(driverGamepad, ExtendedGamepadKeys.Button.DPAD_LEFT))
+                .whenPressed(
+                        new SequentialCommandGroup(
+                                new HomeClipperDriveCommand(clipper),
+                                new SetClipperDrivePositionCommand(clipper, Configuration.clipDriveClipPosition)
+                        )
+                );
+
+        Button testPIDRight = (new ExtendedGamepadButton(driverGamepad, ExtendedGamepadKeys.Button.DPAD_UP))
+                .whenPressed(
+                        new SetClipperDrivePositionCommand(clipper, clipper.magPosition)
+                );
+
+        Button testPIDLeft = (new ExtendedGamepadButton(driverGamepad, ExtendedGamepadKeys.Button.DPAD_DOWN))
+                .whenPressed(
+                        new SetClipperDrivePositionCommand(clipper, Configuration.clipDriveClipPosition)
+                );
+
+        Button testClip = (new ExtendedGamepadButton(driverGamepad, ExtendedGamepadKeys.Button.DPAD_RIGHT))
+                .whenPressed(
+                        new TestClipCommand(bot)
+                );
+
+        ManualClipperDriveCommand manualClipperDriveCommand = new ManualClipperDriveCommand(
+                clipper,
+                () -> driverGamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER),
+                () -> driverGamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)
+        );
+
+        register(clipper);
+        clipper.setDefaultCommand(manualClipperDriveCommand);
+
+        //endregion
+
+        //region Deposit
+
+        //endregion
+
+        schedule(
+                new InstantCommand(() -> {
+                    //clipper.setClipperServoPosition(Configuration.clipperSetPosition);
+                    //clipper.setClipmagPivotServoPosition(Configuration.clipMagUp);
+                })
+        );
+    }
+}
