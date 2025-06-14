@@ -21,11 +21,14 @@ public class Clipper extends SubsystemBase {
 
     private double targetClipperPosition = 0.0;
     public final double clipWidth = 2.54; // cm
-    public int magPosition = 7;
+    public int magPosition = 0;
     private boolean isHoming = true;
+
+    private double targetClipperServoPosition = 0.0;
 
     public enum ClipperState {
         CLIP,
+        GRAB,
         SET
     }
 
@@ -46,7 +49,7 @@ public class Clipper extends SubsystemBase {
         clipperDriveMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         clipperDriveMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
-        clipperServo.setDirection(Servo.Direction.REVERSE);
+        //clipperServo.setDirection(Servo.Direction.REVERSE);
         clipmagPivotServo.setDirection(Servo.Direction.REVERSE);
 
         clipperDriveController = new PIDFController(
@@ -71,6 +74,8 @@ public class Clipper extends SubsystemBase {
         bot.telem.addData("Is Homing", isHoming ? "Yes" : "No");
         bot.telem.addData("Clipper Drive Position", getClipperDrivePosition());
         bot.telem.addData("Target Clipper Position", targetClipperPosition);
+        bot.telem.addData("Clipper Servo Position", clipperServo.getPosition());
+        bot.telem.addData("Clipper Mag Position", magPosition);
         bot.telem.update();
     }
 
@@ -108,10 +113,19 @@ public class Clipper extends SubsystemBase {
             case CLIP:
                 clipperServo.setPosition(Configuration.clipperClipPosition);
                 break;
+            case GRAB:
+                clipperServo.setPosition(Configuration.clipperGrabPosition);
+                break;
             case SET:
                 clipperServo.setPosition(Configuration.clipperSetPosition);
                 break;
         }
+    }
+
+    public void incrementClipperServoPosition(double increment) {
+        double currentPosition = clipperServo.getPosition();
+        double newPosition = currentPosition + increment;
+        clipperServo.setPosition(newPosition);
     }
 
     public void setClipMagPosition(ClipMagState state) {

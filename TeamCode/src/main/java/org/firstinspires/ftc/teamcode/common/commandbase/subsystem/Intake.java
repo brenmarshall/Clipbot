@@ -2,10 +2,14 @@ package org.firstinspires.ftc.teamcode.common.commandbase.subsystem;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDFController;
+import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoControllerEx;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 import org.firstinspires.ftc.teamcode.common.Bot;
 import org.firstinspires.ftc.teamcode.common.Configuration;
@@ -17,17 +21,18 @@ public class Intake extends SubsystemBase {
     private final DcMotorEx intakeSlidesMotor; // bare motor HAVE
     private final CRServo turretServo; // axon mini/agfrc sa33 NEED
     private final AnalogInput turretEncoder; // custom mt6701 board NEED
-    private final Servo intakeArmServo; // gb speed NEED
+    private final ServoImplEx intakeArmServo; // gb speed NEED
     private final Servo intakeWristServo; // gb speed NEED
-    private final Servo intakeClawServo; // agfrc sa30 NEED
+    //private final Servo intakeClawServo; // agfrc sa30 NEED
 
     private final PIDFController intakeSlidesController;
     private final PIDFController turretController;
 
     private double targetIntakeSlidesPosition = 0.0;
     private double targetTurretAngle = 0.0;
+    private double targetIntakeArmPosition = 0.0;
 
-    private final double INTAKE_ARM_SERVO_RANGE = 270.0;
+    private final double INTAKE_ARM_SERVO_RANGE = 180.0;
     private final double INTAKE_ARM_MIN_ANGLE = 0.0;
     private final double INTAKE_ARM_MAX_ANGLE = 115.0;
     private final double INTAKE_WRIST_SERVO_RANGE = 270.0;
@@ -39,9 +44,9 @@ public class Intake extends SubsystemBase {
         intakeSlidesMotor = bot.hMap.get(DcMotorEx.class, "intakeSlidesMotor");
         turretServo = bot.hMap.get(CRServo.class, "turretServo");
         turretEncoder = bot.hMap.get(AnalogInput.class, "turretEncoder");
-        intakeArmServo = bot.hMap.get(Servo.class, "intakeArmServo");
+        intakeArmServo = bot.hMap.get(ServoImplEx.class, "intakeArmServo");
         intakeWristServo = bot.hMap.get(Servo.class, "intakeWristServo");
-        intakeClawServo = bot.hMap.get(Servo.class, "intakeClawServo");
+        //intakeClawServo = bot.hMap.get(Servo.class, "intakeClawServo");
 
         intakeSlidesMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         intakeSlidesMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
@@ -59,6 +64,9 @@ public class Intake extends SubsystemBase {
                 Configuration.turret_kD, // kD
                 Configuration.turret_kF  // kF
         );
+
+        intakeArmServo.setPwmRange(new PwmControl.PwmRange(500, 2500));
+        intakeArmServo.setDirection(Servo.Direction.REVERSE);
     }
 
     public void periodic()  {
@@ -103,11 +111,22 @@ public class Intake extends SubsystemBase {
         intakeArmServo.setPosition(ServoFunctions.degreesToServoPosition((ServoFunctions.clampAngleDegrees(angle, INTAKE_ARM_MIN_ANGLE, INTAKE_ARM_MAX_ANGLE)), INTAKE_ARM_SERVO_RANGE));
     }
 
+    public void setIntakeArmPosition(double position) {
+        intakeArmServo.setPosition(position);
+        targetIntakeArmPosition = position;
+    }
+
+    public void incrementIntakeArmPosition(double increment) {
+        double currentPosition = intakeArmServo.getPosition();
+        double newPosition = currentPosition + increment;
+        intakeArmServo.setPosition(newPosition);
+    }
+
     public void setIntakeWristAngle(double angle) {
         intakeWristServo.setPosition(ServoFunctions.degreesToServoPosition((ServoFunctions.clampAngleDegrees(angle, INTAKE_WRIST_MIN_ANGLE, INTAKE_WRIST_MAX_ANGLE)), INTAKE_WRIST_SERVO_RANGE));
     }
 
-    public void setIntakeClawPosition(double position) {
-        intakeClawServo.setPosition(position);
-    }
+    //public void setIntakeClawPosition(double position) {
+        //intakeClawServo.setPosition(position);
+    //}
 }

@@ -14,23 +14,25 @@ public class Bot extends Robot {
     public final HardwareMap hMap;
     public final Gamepad gamepad;
 
-    //private final Intake intake;
+    private final Intake intake;
     private final Clipper clipper;
     //private final Deposit deposit;
+
+    private boolean enableDrive = true;
 
     public Bot(Telemetry telem, HardwareMap hMap, Gamepad gamepad) {
         this.telem = telem;
         this.hMap = hMap;
         this.gamepad = gamepad;
 
-        //intake = new Intake(this);
+        intake = new Intake(this);
         clipper = new Clipper(this);
         //deposit = new Deposit(this);
     }
 
-    //public Intake getIntake() {
-        //return intake;
-    //}
+    public Intake getIntake() {
+        return intake;
+    }
 
     public Clipper getClipper() {
         return clipper;
@@ -39,4 +41,8 @@ public class Bot extends Robot {
     //public Deposit getDeposit() {
         //return deposit;
     //}
+
+    public void setEnableDrive(boolean enableDrive) { this.enableDrive = enableDrive; }
+
+    public boolean getEnableDrive() { return enableDrive; }
 }

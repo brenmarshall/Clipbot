@@ -10,7 +10,8 @@ import org.firstinspires.ftc.teamcode.common.Configuration;
 
 public class Deposit extends SubsystemBase {
     private final Bot bot;
-    private final DcMotorEx depositSlidesMotor; // bare motor HAVE
+    private final DcMotorEx leftDepositSlidesMotor; // bare motor HAVE
+    private final DcMotorEx rightDepositSlidesMotor; // bare motor HAVE
     private final Servo DepositArmServo; // axon mini/agfrc sa33 NEED
     private final Servo DepositWristServo; // gb torque NEED
     private final Servo DepositClawServo; // agfrc sa30 NEED
@@ -21,13 +22,16 @@ public class Deposit extends SubsystemBase {
 
     public Deposit(Bot bot) {
         this.bot = bot;
-        depositSlidesMotor = bot.hMap.get(DcMotorEx.class, "depositSlidesMotor");
-        DepositArmServo = bot.hMap.get(Servo.class, "DepositArmServo");
-        DepositWristServo = bot.hMap.get(Servo.class, "DepositWristServo");
-        DepositClawServo = bot.hMap.get(Servo.class, "DepositClawServo");
+        leftDepositSlidesMotor = bot.hMap.get(DcMotorEx.class, "leftDepositSlidesMotor");
+        rightDepositSlidesMotor = bot.hMap.get(DcMotorEx.class, "rightDepositSlidesMotor");
+        DepositArmServo = bot.hMap.get(Servo.class, "depositArmServo");
+        DepositWristServo = bot.hMap.get(Servo.class, "depositWristServo");
+        DepositClawServo = bot.hMap.get(Servo.class, "depositClawServo");
 
-        depositSlidesMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        depositSlidesMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        leftDepositSlidesMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        rightDepositSlidesMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        leftDepositSlidesMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        rightDepositSlidesMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
         depositSlidesController = new PIDFController(
                 Configuration.depositSlides_kP, // kP
@@ -39,11 +43,12 @@ public class Deposit extends SubsystemBase {
 
     public void periodic() {
         double depositSlidesPower = depositSlidesController.calculate(
-                depositSlidesMotor.getCurrentPosition(),
+                leftDepositSlidesMotor.getCurrentPosition(),
                 targetDepositSlidesPosition * Configuration.depositSlides_ticksPerCM
         );
 
-        depositSlidesMotor.setPower(depositSlidesPower);
+        leftDepositSlidesMotor.setPower(depositSlidesPower);
+        rightDepositSlidesMotor.setPower(depositSlidesPower);
     }
 
     public void setDepositSlidesPosition(double target) {
@@ -51,7 +56,7 @@ public class Deposit extends SubsystemBase {
     }
 
     public double getDepositSlidesPosition() {
-        return depositSlidesMotor.getCurrentPosition() / Configuration.depositSlides_ticksPerCM;
+        return leftDepositSlidesMotor.getCurrentPosition() / Configuration.depositSlides_ticksPerCM;
     }
 
     public void setDepositArmPosition(double position) {
