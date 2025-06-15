@@ -19,4 +19,6 @@ public class Configuration {
     public static double clipMagUp = 0.0, clipMagDown = 0.64;
 
     public static double PTOIdlePosition = 0.0, PTOReleaseHooksPosition = 0.2, PTOEngagedPosition = 0.4;
+
+    public static double Lv2LiftHeight = 0.0, Lv3LiftHeight = 0.0;
 }

@@ -8,6 +8,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.common.commandbase.subsystem.Clipper;
 import org.firstinspires.ftc.teamcode.common.commandbase.subsystem.Deposit;
 import org.firstinspires.ftc.teamcode.common.commandbase.subsystem.Intake;
+import org.firstinspires.ftc.teamcode.common.intothedeep.BotState;
 
 public class Bot extends Robot {
     public final Telemetry telem;
@@ -17,6 +18,8 @@ public class Bot extends Robot {
     private final Intake intake;
     private final Clipper clipper;
     //private final Deposit deposit;
+
+    public static BotState state = BotState.SCORING;
 
     private boolean enableDrive = true;
 
@@ -41,6 +44,14 @@ public class Bot extends Robot {
     //public Deposit getDeposit() {
         //return deposit;
     //}
+
+    public void setState(BotState state) {
+        Bot.state = state;
+    }
+
+    public BotState getState() {
+        return state;
+    }
 
     public void setEnableDrive(boolean enableDrive) { this.enableDrive = enableDrive; }
 
