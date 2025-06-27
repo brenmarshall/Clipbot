@@ -4,17 +4,14 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
-import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.button.Button;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.common.Bot;
-import org.firstinspires.ftc.teamcode.common.Configuration;
-import org.firstinspires.ftc.teamcode.common.commandbase.command.clipper.HomeClipperDriveCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.command.clipper.ManualClipperDriveCommand;
-import org.firstinspires.ftc.teamcode.common.commandbase.command.clipper.SetClipMagPositionCommand;
-import org.firstinspires.ftc.teamcode.common.commandbase.command.clipper.SetClipperDrivePositionCommand;
+import org.firstinspires.ftc.teamcode.common.commandbase.command.clipper.SetClipMagGripperPositionCommand;
+import org.firstinspires.ftc.teamcode.common.commandbase.command.clipper.SetClipMagPivotPositionCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.command.clipper.TestClipCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.subsystem.Clipper;
 import org.firstinspires.ftc.teamcode.common.commandbase.subsystem.Intake;
@@ -73,31 +70,27 @@ public class Test extends LinearOpMode {
         Button clipPosition = (new ExtendedGamepadButton(driverGamepad, ExtendedGamepadKeys.Button.CROSS))
                 .whenPressed(
                         //new SetClipperPositionCommand(clipper, Clipper.ClipperState.CLIP)
-                        new InstantCommand(() -> clipper.incrementClipperServoPosition(-0.01))
+                        new SetClipMagGripperPositionCommand(clipper, Clipper.ClipMagGripperState.CLOSE)
+                        //new InstantCommand(() -> clipper.incrementClipperServoPosition(-0.01))
+                        //new InstantCommand(() -> clipper.incrementClipMagGripperPosition(-0.01))
                 );
 
         Button setPosition = (new ExtendedGamepadButton(driverGamepad, ExtendedGamepadKeys.Button.CIRCLE))
                 .whenPressed(
                         //new SetClipperPositionCommand(clipper, Clipper.ClipperState.SET)
-                        new InstantCommand(() -> clipper.incrementClipperServoPosition(0.01))
+                        new SetClipMagGripperPositionCommand(clipper, Clipper.ClipMagGripperState.OPEN)
+                        //new InstantCommand(() -> clipper.incrementClipperServoPosition(0.01))
+                        //new InstantCommand(() -> clipper.incrementClipMagGripperPosition(0.01))
                 );
 
         Button upPosition = (new ExtendedGamepadButton(driverGamepad, ExtendedGamepadKeys.Button.TRIANGLE))
                 .whenPressed(
-                        new SetClipMagPositionCommand(clipper, Clipper.ClipMagState.UP)
+                        new SetClipMagPivotPositionCommand(clipper, Clipper.ClipMagState.UP)
                 );
 
         Button downPosition = (new ExtendedGamepadButton(driverGamepad, ExtendedGamepadKeys.Button.SQUARE))
                 .whenPressed(
-                        new SetClipMagPositionCommand(clipper, Clipper.ClipMagState.DOWN)
-                );
-
-        Button homeClipper = (new ExtendedGamepadButton(driverGamepad, ExtendedGamepadKeys.Button.DPAD_LEFT))
-                .whenPressed(
-                        new SequentialCommandGroup(
-                                new HomeClipperDriveCommand(clipper),
-                                new SetClipperDrivePositionCommand(clipper, Configuration.clipDriveClipPosition)
-                        )
+                        new SetClipMagPivotPositionCommand(clipper, Clipper.ClipMagState.DOWN)
                 );
 
         //Button testPIDRight = (new ExtendedGamepadButton(driverGamepad, ExtendedGamepadKeys.Button.DPAD_UP))
@@ -134,6 +127,7 @@ public class Test extends LinearOpMode {
                 //clipper.setClipmagPivotServoPosition(Configuration.clipMagUp);
                 //})
                 //new SetClipperPositionCommand(clipper, Clipper.ClipperState.CLIP)
+                new SetClipMagGripperPositionCommand(clipper, Clipper.ClipMagGripperState.CLOSE)
         );
 
         waitForStart();

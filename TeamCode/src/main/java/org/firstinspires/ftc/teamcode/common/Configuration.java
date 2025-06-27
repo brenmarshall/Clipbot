@@ -16,9 +16,13 @@ public class Configuration {
 
     public static double clipperClipPosition = 0.05, clipperGrabPosition = 0.64, clipperSetPosition = 0.75;
 
-    public static double clipMagUp = 0.0, clipMagDown = 0.64;
+    public static double clipMagUp = 0.05, clipMagDown = 0.69;
+
+    public static double clipMagGripperOpen = 0.6, clipMagGripperSet = 0.05, clipMagGripperClose = 0.0;
 
     public static double PTOIdlePosition = 0.0, PTOReleaseHooksPosition = 0.2, PTOEngagedPosition = 0.4;
 
     public static double Lv2LiftHeight = 0.0, Lv3LiftHeight = 0.0;
+
+    public static double intakeClawOpen = 0.0, intakeClawHold = 0.4, intakeClawClose = 0.5;
 }

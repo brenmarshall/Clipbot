@@ -7,27 +7,17 @@ import org.firstinspires.ftc.teamcode.common.commandbase.subsystem.Ascent;
 public class SetPTOPositionCommand extends CommandBase {
 
     private final Ascent ascent;
-    private final Ascent.PTOState state;
+    private final Ascent.PTOState position;
 
-    public SetPTOPositionCommand(Ascent ascent, Ascent.PTOState state) {
+    public SetPTOPositionCommand(Ascent ascent, Ascent.PTOState position) {
         this.ascent = ascent;
-        this.state = state;
+        this.position = position;
         addRequirements(ascent);
     }
 
     @Override
     public void initialize() {
-        switch (state) {
-            case IDLE:
-                ascent.setPTOPosition(Ascent.PTOState.IDLE);
-                break;
-            case RELEASE_HOOKS:
-                ascent.setPTOPosition(Ascent.PTOState.RELEASE_HOOKS);
-                break;
-            case ENGAGED:
-                ascent.setPTOPosition(Ascent.PTOState.ENGAGED);
-                break;
-        }
+        ascent.setPTOPosition(position);
     }
 
     @Override

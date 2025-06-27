@@ -5,14 +5,13 @@ import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 
 import org.firstinspires.ftc.teamcode.common.Bot;
-import org.firstinspires.ftc.teamcode.common.Configuration;
 import org.firstinspires.ftc.teamcode.common.commandbase.subsystem.Clipper;
 
 public class TestClipCommand extends SequentialCommandGroup {
     public TestClipCommand(Bot bot) {
         addCommands(
             new SetClipperPositionCommand(bot.getClipper(), Clipper.ClipperState.GRAB),
-            new SetClipMagPositionCommand(bot.getClipper(), Clipper.ClipMagState.DOWN),
+            new SetClipMagPivotPositionCommand(bot.getClipper(), Clipper.ClipMagState.DOWN),
             new HomeClipperDriveCommand(bot.getClipper()),
             new WaitCommand(250),
             new GrabNextClipCommand(bot),

@@ -4,11 +4,12 @@ import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.common.commandbase.subsystem.Clipper;
 
-public class SetClipMagPositionCommand extends CommandBase {
-    private final Clipper clipper;
-    private final Clipper.ClipMagState position;
+public class SetClipMagGripperPositionCommand extends CommandBase {
 
-    public SetClipMagPositionCommand(Clipper clipper, Clipper.ClipMagState position) {
+    private final Clipper clipper;
+    private final Clipper.ClipMagGripperState position;
+
+    public SetClipMagGripperPositionCommand(Clipper clipper, Clipper.ClipMagGripperState position) {
         this.clipper = clipper;
         this.position = position;
         addRequirements(clipper);
@@ -16,7 +17,7 @@ public class SetClipMagPositionCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        clipper.setClipMagPosition(position);
+        clipper.setClipMagGripperPosition(position);
     }
 
     @Override

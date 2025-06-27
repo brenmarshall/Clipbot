@@ -13,9 +13,9 @@ public class Clipper extends SubsystemBase {
     private final Bot bot;
     private final DcMotorEx clipperDriveMotor; // bare motor HAVE
     private final DigitalChannel clipperLimitSwitch; // limit switch HAVE
-    private final Servo clipperServo; // gb speed HAVE
-    private final Servo clipmagPivotServo; // gb torque HAVE
-    private final Servo clipmagServo; // agfrc sa30 NEED
+    private final Servo clipperServo; // 299:lp HAVE
+    private final Servo clipmagPivotServo; // gb speed HAVE
+    private final Servo clipMagServo; // raw 100 mini HAVE
 
     private final PIDFController clipperDriveController;
 
@@ -37,6 +37,12 @@ public class Clipper extends SubsystemBase {
         DOWN
     }
 
+    public enum ClipMagGripperState {
+        OPEN,
+        SET,
+        CLOSE
+    }
+
     public Clipper(Bot bot) {
         this.bot = bot;
 
@@ -44,13 +50,13 @@ public class Clipper extends SubsystemBase {
         clipperLimitSwitch = bot.hMap.get(DigitalChannel.class, "clipperLimitSwitch");
         clipperServo = bot.hMap.get(Servo.class, "clipperServo");
         clipmagPivotServo = bot.hMap.get(Servo.class, "clipmagPivotServo");
-        clipmagServo = bot.hMap.get(Servo.class, "clipmagServo");
+        clipMagServo = bot.hMap.get(Servo.class, "clipmagServo");
 
         clipperDriveMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         clipperDriveMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
-        //clipperServo.setDirection(Servo.Direction.REVERSE);
         clipmagPivotServo.setDirection(Servo.Direction.REVERSE);
+        clipMagServo.setDirection(Servo.Direction.REVERSE);
 
         clipperDriveController = new PIDFController(
                 Configuration.clipperDrive_kP, // kP
@@ -75,6 +81,7 @@ public class Clipper extends SubsystemBase {
         bot.telem.addData("Clipper Drive Position", getClipperDrivePosition());
         bot.telem.addData("Target Clipper Position", targetClipperPosition);
         bot.telem.addData("Clipper Servo Position", clipperServo.getPosition());
+        bot.telem.addData("Clip Mag Gripper Position", clipMagServo.getPosition());
         bot.telem.addData("Clipper Mag Position", magPosition);
         bot.telem.update();
     }
@@ -128,7 +135,7 @@ public class Clipper extends SubsystemBase {
         clipperServo.setPosition(newPosition);
     }
 
-    public void setClipMagPosition(ClipMagState state) {
+    public void setClipMagPivotPosition(ClipMagState state) {
         switch (state) {
             case UP:
                 clipmagPivotServo.setPosition(Configuration.clipMagUp);
@@ -139,7 +146,24 @@ public class Clipper extends SubsystemBase {
         }
     }
 
-    public void setClipmagServoPosition(double position) {
-        clipmagServo.setPosition(position);
+    public void setClipMagGripperPosition(ClipMagGripperState state) {
+        switch (state) {
+            case OPEN:
+                clipMagServo.setPosition(Configuration.clipMagGripperOpen);
+                break;
+            case SET:
+                clipMagServo.setPosition(Configuration.clipMagGripperSet);
+                break;
+            case CLOSE:
+                clipMagServo.setPosition(Configuration.clipMagGripperClose);
+                break;
+        }
     }
+
+    public void incrementClipMagGripperPosition(double increment) {
+        double currentPosition = clipMagServo.getPosition();
+        double newPosition = currentPosition + increment;
+        clipMagServo.setPosition(newPosition);
+    }
+
 }

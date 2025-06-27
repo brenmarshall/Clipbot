@@ -14,7 +14,8 @@ public class Ascent extends SubsystemBase {
     private final DcMotorEx backLeft, backRight, frontLeft, frontRight;
     private final PIDFController ascentController;
 
-    private final Servo leftPTO, rightPTO;
+    private final Servo leftPTO; // gobilda torque HAVE
+    private final Servo rightPTO; // gobilda torque HAVE
 
     private double ascentTargetPosition = 0.0;
 

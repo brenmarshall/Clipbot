@@ -2,13 +2,12 @@ package org.firstinspires.ftc.teamcode.common.commandbase.subsystem;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDFController;
-import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.ServoControllerEx;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 import org.firstinspires.ftc.teamcode.common.Bot;
@@ -21,9 +20,11 @@ public class Intake extends SubsystemBase {
     private final DcMotorEx intakeSlidesMotor; // bare motor HAVE
     private final CRServo turretServo; // axon mini/agfrc sa33 NEED
     private final AnalogInput turretEncoder; // custom mt6701 board NEED
-    private final ServoImplEx intakeArmServo; // gb speed NEED
-    private final Servo intakeWristServo; // gb speed NEED
-    //private final Servo intakeClawServo; // agfrc sa30 NEED
+    private final ServoImplEx intakeArmServo; // 299:lp HAVE
+    private final Servo intakeWristServo; // gb speed HAVE
+    private final Servo intakeClawServo; // raw 100 mini HAVE
+    private final DigitalChannel intakeClawSensor; // custom ina169 board NEED
+    private final AnalogInput intakeSubSensor; // pololu GP2Y0A60SZLF HAVE
 
     private final PIDFController intakeSlidesController;
     private final PIDFController turretController;
@@ -39,6 +40,14 @@ public class Intake extends SubsystemBase {
     private final double INTAKE_WRIST_MIN_ANGLE = -90.0;
     private final double INTAKE_WRIST_MAX_ANGLE = 90.0;
 
+    public enum IntakeClawState {
+        OPEN,
+        HOLD,
+        CLOSED
+    }
+
+    public IntakeClawState intakeClawState;
+
     public Intake(Bot bot) {
         this.bot = bot;
         intakeSlidesMotor = bot.hMap.get(DcMotorEx.class, "intakeSlidesMotor");
@@ -46,7 +55,9 @@ public class Intake extends SubsystemBase {
         turretEncoder = bot.hMap.get(AnalogInput.class, "turretEncoder");
         intakeArmServo = bot.hMap.get(ServoImplEx.class, "intakeArmServo");
         intakeWristServo = bot.hMap.get(Servo.class, "intakeWristServo");
-        //intakeClawServo = bot.hMap.get(Servo.class, "intakeClawServo");
+        intakeClawServo = bot.hMap.get(Servo.class, "intakeClawServo");
+        intakeClawSensor = bot.hMap.get(DigitalChannel.class, "intakeClawSensor");
+        intakeSubSensor = bot.hMap.get(AnalogInput.class, "intakeSubSensor");
 
         intakeSlidesMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         intakeSlidesMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
@@ -83,6 +94,8 @@ public class Intake extends SubsystemBase {
         );
 
         turretServo.setPower(intakeTurretPower);
+
+        bot.telem.addData("Intake Sub Sensor Voltage", intakeSubSensor.getVoltage());
     }
 
     public void setIntakeSlidesPosition(double position) {
@@ -126,7 +139,33 @@ public class Intake extends SubsystemBase {
         intakeWristServo.setPosition(ServoFunctions.degreesToServoPosition((ServoFunctions.clampAngleDegrees(angle, INTAKE_WRIST_MIN_ANGLE, INTAKE_WRIST_MAX_ANGLE)), INTAKE_WRIST_SERVO_RANGE));
     }
 
-    //public void setIntakeClawPosition(double position) {
-        //intakeClawServo.setPosition(position);
-    //}
+    public void setIntakeClawPosition(IntakeClawState state) {
+        switch (state) {
+            case OPEN:
+                intakeClawServo.setPosition(Configuration.intakeClawOpen);
+                break;
+            case HOLD:
+                intakeClawServo.setPosition(Configuration.intakeClawHold);
+                break;
+            case CLOSED:
+                intakeClawServo.setPosition(Configuration.intakeClawClose);
+                break;
+        }
+    }
+
+    public void setIntakeClawState(IntakeClawState state) {
+        intakeClawState = state;
+        setIntakeClawPosition(state);
+    }
+
+    public boolean isIntakeClawGrabbing() {
+        switch (intakeClawState) {
+            case OPEN:
+                return false;
+            case CLOSED:
+                return intakeClawSensor.getState();
+            default:
+                return false;
+        }
+    }
 }
