@@ -22,7 +22,7 @@ public class ManualTurretCommand extends CommandBase {
     public void execute() {
         switch (intake.intakeTurretState) {
             case HOMING:
-            case OPERATING:
+            case POSITION_CONTROL:
                 break;
             case MANUAL_OVERRIDE:
                 intake.setIntakeTurretPower((-rightPower.getAsDouble()) + leftPower.getAsDouble());

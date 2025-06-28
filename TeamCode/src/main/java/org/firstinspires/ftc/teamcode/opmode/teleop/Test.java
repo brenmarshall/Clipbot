@@ -4,14 +4,21 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.ParallelCommandGroup;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
+import com.arcrobotics.ftclib.command.WaitUntilCommand;
 import com.arcrobotics.ftclib.command.button.Button;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.common.Bot;
+import org.firstinspires.ftc.teamcode.common.Configuration;
 import org.firstinspires.ftc.teamcode.common.commandbase.command.clipper.SetClipMagGripperPositionCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.command.clipper.TestClipCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.command.intake.ManualTurretCommand;
+import org.firstinspires.ftc.teamcode.common.commandbase.command.intake.SetIntakeArmAngleCommand;
+import org.firstinspires.ftc.teamcode.common.commandbase.command.intake.SetIntakeTurretAngleCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.command.intake.homing.HomeIntakeTurretCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.command.intake.SetIntakeClawPositionCommand;
 import org.firstinspires.ftc.teamcode.common.commandbase.command.intake.SetIntakeWristAngleCommand;
@@ -21,6 +28,7 @@ import org.firstinspires.ftc.teamcode.common.commandbase.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.common.util.ExtendedGamepadButton;
 import org.firstinspires.ftc.teamcode.common.util.ExtendedGamepadEx;
 import org.firstinspires.ftc.teamcode.common.util.ExtendedGamepadKeys;
+import org.firstinspires.ftc.teamcode.common.util.SusParallelCommandGroup;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Test", group = "TeleOp")
 public class Test extends LinearOpMode {
@@ -90,6 +98,36 @@ public class Test extends LinearOpMode {
                         new HomeIntakeTurretCommand(intake)
                 );
 
+        Button testTransfer = (new ExtendedGamepadButton(driverGamepad, ExtendedGamepadKeys.Button.TRIANGLE))
+                .whenPressed(
+                        new SequentialCommandGroup(
+                                new HomeIntakeTurretCommand(intake),
+                                new SusParallelCommandGroup(
+                                        new SetIntakeTurretAngleCommand(intake, Configuration.intakeTurretTransferAngle),
+                                        new SequentialCommandGroup(
+                                                new WaitUntilCommand(() -> intake.getTurretAngle() >= 240.0),
+                                                new SetIntakeWristAngleCommand(intake, (450 - Configuration.intakeTurretTransferAngle + 10))
+                                        )
+                                ),
+                                new WaitCommand(250),
+                                new SetIntakeArmAngleCommand(intake, 60.0),
+                                new WaitCommand(1000),
+                                new SetIntakeClawPositionCommand(intake, Intake.IntakeClawState.OPEN),
+                                new WaitCommand(250),
+                                new SetIntakeArmAngleCommand(intake, 115.0)
+                        )
+                );
+
+        Button intakeTurretLeft = (new ExtendedGamepadButton(driverGamepad, ExtendedGamepadKeys.Button.LEFT_BUMPER))
+                .whenPressed(
+                        new SetIntakeTurretAngleCommand(intake, 0.0)
+                );
+
+        Button intakeTurretRight = (new ExtendedGamepadButton(driverGamepad, ExtendedGamepadKeys.Button.RIGHT_BUMPER))
+                .whenPressed(
+                        new SetIntakeTurretAngleCommand(intake, 180.0)
+                );
+
         ManualTurretCommand manualTurretCommand = new ManualTurretCommand(
                 intake,
                 () -> driverGamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER),
@@ -157,6 +195,7 @@ public class Test extends LinearOpMode {
                 //})
                 //new SetClipperPositionCommand(clipper, Clipper.ClipperState.CLIP)
                 new SetClipMagGripperPositionCommand(clipper, Clipper.ClipMagGripperState.CLOSED),
+                new SetIntakeArmAngleCommand(intake, 115.0),
                 new SetIntakeWristAngleCommand(intake, 90.0),
                 new SetIntakeClawPositionCommand(intake, Intake.IntakeClawState.CLOSED)
                 //new HomeIntakeTurretCommand(intake)

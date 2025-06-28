@@ -15,12 +15,10 @@ public class ZeroTurretAtLimit extends InstantCommand {
 
                     intake.encoderZeroOffset = intake.getEncoderDegrees();
                     intake.servoRevolution = 0; // We are at Turret 0°, so we are in Servo Revolution 0.
-                    intake.previousEncoderAngle = 0; // The corrected angle at home is 0.
-                    intake.currentTurretAngle = 0.0;
-
-                    // Set the final state. Using a general "IDLE" or "POSITION_CONTROL"
-                    // is often better than "MANUAL_OVERRIDE" after homing.
-                    intake.intakeTurretState = Intake.IntakeTurretState.MANUAL_OVERRIDE;
+                    intake.previousEncoderAngle = 90.0; // The corrected angle at home is 0.
+                    intake.targetTurretAngle = 90.0;
+                    intake.currentTurretAngle = 90.0;
+                    intake.intakeTurretState = Intake.IntakeTurretState.POSITION_CONTROL;
                 },
                 intake
         );

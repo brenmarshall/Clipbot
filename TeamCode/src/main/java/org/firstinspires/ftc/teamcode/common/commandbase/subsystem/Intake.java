@@ -42,6 +42,8 @@ public class Intake extends SubsystemBase {
     private double targetIntakeArmPosition = 0.0;
 
     private final double INTAKE_TURRET_RATIO = 60.0 / 30.0;
+    private final double INTAKE_TURRET_MIN_ANGLE = 20.0;
+    private final double INTAKE_TURRET_MAX_ANGLE = 300.0;
     private final double INTAKE_ARM_SERVO_RANGE = 160.0;
     private final double INTAKE_ARM_RATIO = 40.0 / 48.0;
     private final double INTAKE_ARM_MIN_ANGLE = 0.0;
@@ -53,7 +55,7 @@ public class Intake extends SubsystemBase {
 
     public enum IntakeTurretState {
         HOMING,
-        OPERATING,
+        POSITION_CONTROL,
         MANUAL_OVERRIDE
     }
 
@@ -119,18 +121,19 @@ public class Intake extends SubsystemBase {
             case MANUAL_OVERRIDE:
                 break;
 
-            case OPERATING:
+            case POSITION_CONTROL:
                 double turretPower = intakeTurretController.calculate(
                         currentTurretAngle,
                         targetTurretAngle
                 );
-                intakeTurretServo.setPower(turretPower);
+                intakeTurretServo.setPower(-turretPower);
                 break;
         }
 
         bot.telem.addData("Intake Turret State", intakeTurretState.toString());
         bot.telem.addData("Intake Encoder Angle", getEncoderDegrees());
-        bot.telem.addData("Intake Turret Angle", currentTurretAngle);
+        bot.telem.addData("Current Intake Turret Angle", currentTurretAngle);
+        bot.telem.addData("Target Intake Turret Angle", targetTurretAngle);
         bot.telem.addData("Intake Turret Power", intakeTurretServo.getPower());
         bot.telem.addData("Is Intake Limit Switch Pressed", isIntakeTurretLimitSwitchPressed());
         bot.telem.addData("Intake Arm Position", intakeArmServo.getPosition());
@@ -187,11 +190,11 @@ public class Intake extends SubsystemBase {
         // 3. Convert the turret's continuous angle to a final, wrapping 0-360 angle.
         // The double modulo `((... % 360) + 360) % 360` is a robust way
         // to handle negative results if the turret moves past zero.
-        currentTurretAngle = ((continuousTurretAngle % 360.0) + 360.0) % 360.0;
+        currentTurretAngle = (((continuousTurretAngle + 90) % 360.0) + 360.0) % 360.0;
     }
 
     public void setTurretAngle(double angle) {
-        targetTurretAngle = angle;
+        targetTurretAngle = (ServoFunctions.clampAngleDegrees(angle, INTAKE_TURRET_MIN_ANGLE, INTAKE_TURRET_MAX_ANGLE));
     }
 
     public double getTurretAngle() {
