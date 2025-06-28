@@ -15,7 +15,7 @@ public class Clipper extends SubsystemBase {
     private final DigitalChannel clipperLimitSwitch; // limit switch HAVE
     private final Servo clipperServo; // 299:lp HAVE
     private final Servo clipmagPivotServo; // gb speed HAVE
-    private final Servo clipMagServo; // raw 100 mini HAVE
+    private final Servo clipMagClawServo; // raw 100 mini HAVE
 
     private final PIDFController clipperDriveController;
 
@@ -40,7 +40,7 @@ public class Clipper extends SubsystemBase {
     public enum ClipMagGripperState {
         OPEN,
         SET,
-        CLOSE
+        CLOSED
     }
 
     public Clipper(Bot bot) {
@@ -50,13 +50,13 @@ public class Clipper extends SubsystemBase {
         clipperLimitSwitch = bot.hMap.get(DigitalChannel.class, "clipperLimitSwitch");
         clipperServo = bot.hMap.get(Servo.class, "clipperServo");
         clipmagPivotServo = bot.hMap.get(Servo.class, "clipmagPivotServo");
-        clipMagServo = bot.hMap.get(Servo.class, "clipmagServo");
+        clipMagClawServo = bot.hMap.get(Servo.class, "clipmagClawServo");
 
         clipperDriveMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         clipperDriveMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
         clipmagPivotServo.setDirection(Servo.Direction.REVERSE);
-        clipMagServo.setDirection(Servo.Direction.REVERSE);
+        clipMagClawServo.setDirection(Servo.Direction.REVERSE);
 
         clipperDriveController = new PIDFController(
                 Configuration.clipperDrive_kP, // kP
@@ -81,7 +81,7 @@ public class Clipper extends SubsystemBase {
         bot.telem.addData("Clipper Drive Position", getClipperDrivePosition());
         bot.telem.addData("Target Clipper Position", targetClipperPosition);
         bot.telem.addData("Clipper Servo Position", clipperServo.getPosition());
-        bot.telem.addData("Clip Mag Gripper Position", clipMagServo.getPosition());
+        bot.telem.addData("Clip Mag Gripper Position", clipMagClawServo.getPosition());
         bot.telem.addData("Clipper Mag Position", magPosition);
         bot.telem.update();
     }
@@ -149,21 +149,21 @@ public class Clipper extends SubsystemBase {
     public void setClipMagGripperPosition(ClipMagGripperState state) {
         switch (state) {
             case OPEN:
-                clipMagServo.setPosition(Configuration.clipMagGripperOpen);
+                clipMagClawServo.setPosition(Configuration.clipMagGripperOpen);
                 break;
             case SET:
-                clipMagServo.setPosition(Configuration.clipMagGripperSet);
+                clipMagClawServo.setPosition(Configuration.clipMagGripperSet);
                 break;
-            case CLOSE:
-                clipMagServo.setPosition(Configuration.clipMagGripperClose);
+            case CLOSED:
+                clipMagClawServo.setPosition(Configuration.clipMagGripperClose);
                 break;
         }
     }
 
     public void incrementClipMagGripperPosition(double increment) {
-        double currentPosition = clipMagServo.getPosition();
+        double currentPosition = clipMagClawServo.getPosition();
         double newPosition = currentPosition + increment;
-        clipMagServo.setPosition(newPosition);
+        clipMagClawServo.setPosition(newPosition);
     }
 
 }

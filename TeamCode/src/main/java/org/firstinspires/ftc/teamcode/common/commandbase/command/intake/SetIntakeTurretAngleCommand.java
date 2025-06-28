@@ -22,6 +22,6 @@ public class SetIntakeTurretAngleCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return (Math.abs(intake.getTurretDegrees() - targetAngle) <= Configuration.turret_tolerance);
+        return (Math.abs(intake.getTurretAngle() - targetAngle) <= Configuration.turret_tolerance);
     }
 }

@@ -10,11 +10,11 @@ import com.qualcomm.robotcore.hardware.configuration.annotations.I2cDeviceType; 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-@TeleOp(name = "MT6701 Zero Programmer", group = "Sensor Testing")
+//@TeleOp(name = "MT6701 Zero Programmer", group = "Sensor Testing")
 // This annotation is helpful for the FTC SDK to recognize your I2C device type.
 // If you create a custom device type in your hardware configuration, you might
 // need to adjust this, or remove it and rely solely on I2cDeviceSynchImpl.
-@I2cDeviceType()
+//@I2cDeviceType()
 public class MT6701ZeroProgrammer extends LinearOpMode {
 
     // --- MT6701 I2C Constants (CONFIRM THESE WITH YOUR SENSOR'S DATASHEET!) ---

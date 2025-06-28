@@ -19,7 +19,7 @@ public class Bot extends Robot {
 
     private final Intake intake;
     private final Clipper clipper;
-    //private final Deposit deposit;
+    private final Deposit deposit;
 
     public static BotState state = BotState.SCORING;
 
@@ -34,7 +34,7 @@ public class Bot extends Robot {
 
         intake = new Intake(this);
         clipper = new Clipper(this);
-        //deposit = new Deposit(this);
+        deposit = new Deposit(this);
     }
 
     public Intake getIntake() {
@@ -45,9 +45,9 @@ public class Bot extends Robot {
         return clipper;
     }
 
-    //public Deposit getDeposit() {
-        //return deposit;
-    //}
+    public Deposit getDeposit() {
+        return deposit;
+    }
 
     public void setState(BotState state) {
         Bot.state = state;

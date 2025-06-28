@@ -4,7 +4,7 @@ package org.firstinspires.ftc.teamcode.common;
 public class Configuration {
     public static double intakeSlides_kP = 0.01, intakeSlides_kI = 0.0, intakeSlides_kD = 0.0, intakeSlides_kF = 0.0, intakeSlides_tolerance = 10.0, intakeSlides_ticksPerCM = 0.0;
 
-    public static double turret_kP = 0.01, turret_kI = 0.0, turret_kD = 0.0, turret_kF = 0.0, turret_tolerance = 10.0;
+    public static double turret_kP = 0.0, turret_kI = 0.0, turret_kD = 0.0, turret_kF = 0.0, turret_tolerance = 10.0;
 
     public static double clipperDrive_kP = 0.01, clipperDrive_kI = 0.0, clipperDrive_kD = 0.0002, clipperDrive_kF = 0.0, clipperDrive_tolerance = 10.0, clipperDrive_ticksPerCM = 37.135;
 
@@ -18,7 +18,7 @@ public class Configuration {
 
     public static double clipMagUp = 0.05, clipMagDown = 0.69;
 
-    public static double clipMagGripperOpen = 0.6, clipMagGripperSet = 0.05, clipMagGripperClose = 0.0;
+    public static double clipMagGripperOpen = 0.3, clipMagGripperSet = 0.05, clipMagGripperClose = 0.0;
 
     public static double PTOIdlePosition = 0.0, PTOReleaseHooksPosition = 0.2, PTOEngagedPosition = 0.4;
 

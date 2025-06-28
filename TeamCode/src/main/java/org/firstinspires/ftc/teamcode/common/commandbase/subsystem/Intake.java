@@ -18,27 +18,44 @@ public class Intake extends SubsystemBase {
 
     private final Bot bot;
     private final DcMotorEx intakeSlidesMotor; // bare motor HAVE
-    private final CRServo turretServo; // axon mini/agfrc sa33 NEED
-    private final AnalogInput turretEncoder; // custom mt6701 board NEED
+    private final CRServo intakeTurretServo; // axon mini/agfrc sa33 NEED
+    private final AnalogInput intakeTurretEncoder; // custom mt6701 board NEED
+    private final DigitalChannel intakeTurretLimitSwitch; // limit switch HAVE
     private final ServoImplEx intakeArmServo; // 299:lp HAVE
-    private final Servo intakeWristServo; // gb speed HAVE
+    private final ServoImplEx intakeWristServo; // gb speed HAVE
     private final Servo intakeClawServo; // raw 100 mini HAVE
     private final DigitalChannel intakeClawSensor; // custom ina169 board NEED
     private final AnalogInput intakeSubSensor; // pololu GP2Y0A60SZLF HAVE
 
     private final PIDFController intakeSlidesController;
-    private final PIDFController turretController;
+    private final PIDFController intakeTurretController;
 
     private double targetIntakeSlidesPosition = 0.0;
-    private double targetTurretAngle = 0.0;
+
+    public double revolutionCounter = 0.0;
+    public int servoRevolution = 0;
+    public double previousEncoderAngle = 0.0;
+    public double encoderZeroOffset = 0.0;
+
+    public double currentTurretAngle = 0.0;
+    public double targetTurretAngle = 0.0;
     private double targetIntakeArmPosition = 0.0;
 
-    private final double INTAKE_ARM_SERVO_RANGE = 180.0;
+    private final double INTAKE_TURRET_RATIO = 60.0 / 30.0;
+    private final double INTAKE_ARM_SERVO_RANGE = 160.0;
+    private final double INTAKE_ARM_RATIO = 40.0 / 48.0;
     private final double INTAKE_ARM_MIN_ANGLE = 0.0;
     private final double INTAKE_ARM_MAX_ANGLE = 115.0;
-    private final double INTAKE_WRIST_SERVO_RANGE = 270.0;
-    private final double INTAKE_WRIST_MIN_ANGLE = -90.0;
-    private final double INTAKE_WRIST_MAX_ANGLE = 90.0;
+    private final double INTAKE_WRIST_SERVO_RANGE = 300.0;
+    private final double INTAKE_WRIST_RATIO = 40.0 / 48.0;
+    private final double INTAKE_WRIST_MIN_ANGLE = 0.0;
+    private final double INTAKE_WRIST_MAX_ANGLE = 180.0;
+
+    public enum IntakeTurretState {
+        HOMING,
+        OPERATING,
+        MANUAL_OVERRIDE
+    }
 
     public enum IntakeClawState {
         OPEN,
@@ -46,15 +63,18 @@ public class Intake extends SubsystemBase {
         CLOSED
     }
 
+    public IntakeTurretState intakeTurretState = IntakeTurretState.HOMING;
+
     public IntakeClawState intakeClawState;
 
     public Intake(Bot bot) {
         this.bot = bot;
         intakeSlidesMotor = bot.hMap.get(DcMotorEx.class, "intakeSlidesMotor");
-        turretServo = bot.hMap.get(CRServo.class, "turretServo");
-        turretEncoder = bot.hMap.get(AnalogInput.class, "turretEncoder");
+        intakeTurretServo = bot.hMap.get(CRServo.class, "intakeTurretServo");
+        intakeTurretEncoder = bot.hMap.get(AnalogInput.class, "intakeTurretEncoder");
+        intakeTurretLimitSwitch = bot.hMap.get(DigitalChannel.class, "intakeTurretLimitSwitch");
         intakeArmServo = bot.hMap.get(ServoImplEx.class, "intakeArmServo");
-        intakeWristServo = bot.hMap.get(Servo.class, "intakeWristServo");
+        intakeWristServo = bot.hMap.get(ServoImplEx.class, "intakeWristServo");
         intakeClawServo = bot.hMap.get(Servo.class, "intakeClawServo");
         intakeClawSensor = bot.hMap.get(DigitalChannel.class, "intakeClawSensor");
         intakeSubSensor = bot.hMap.get(AnalogInput.class, "intakeSubSensor");
@@ -69,7 +89,7 @@ public class Intake extends SubsystemBase {
                 Configuration.intakeSlides_kF  // kF
         );
 
-        turretController = new PIDFController(
+        intakeTurretController = new PIDFController(
                 Configuration.turret_kP, // kP
                 Configuration.turret_kI, // kI
                 Configuration.turret_kD, // kD
@@ -78,9 +98,12 @@ public class Intake extends SubsystemBase {
 
         intakeArmServo.setPwmRange(new PwmControl.PwmRange(500, 2500));
         intakeArmServo.setDirection(Servo.Direction.REVERSE);
+        intakeWristServo.setPwmRange(new PwmControl.PwmRange(500, 2500));
+        intakeClawServo.setDirection(Servo.Direction.REVERSE);
     }
 
     public void periodic()  {
+
         double intakeSlidesPower = intakeSlidesController.calculate(
                 intakeSlidesMotor.getCurrentPosition(),
                 targetIntakeSlidesPosition * Configuration.intakeSlides_ticksPerCM
@@ -88,13 +111,31 @@ public class Intake extends SubsystemBase {
 
         intakeSlidesMotor.setPower(intakeSlidesPower);
 
-        double intakeTurretPower = turretController.calculate(
-                getTurretDegrees(),
-                targetTurretAngle
-        );
+        updateAngleCalculation();
 
-        turretServo.setPower(intakeTurretPower);
+        switch (intakeTurretState) {
+            case HOMING:
 
+            case MANUAL_OVERRIDE:
+                break;
+
+            case OPERATING:
+                double turretPower = intakeTurretController.calculate(
+                        currentTurretAngle,
+                        targetTurretAngle
+                );
+                intakeTurretServo.setPower(turretPower);
+                break;
+        }
+
+        bot.telem.addData("Intake Turret State", intakeTurretState.toString());
+        bot.telem.addData("Intake Encoder Angle", getEncoderDegrees());
+        bot.telem.addData("Intake Turret Angle", currentTurretAngle);
+        bot.telem.addData("Intake Turret Power", intakeTurretServo.getPower());
+        bot.telem.addData("Is Intake Limit Switch Pressed", isIntakeTurretLimitSwitchPressed());
+        bot.telem.addData("Intake Arm Position", intakeArmServo.getPosition());
+        bot.telem.addData("Intake Wrist Position", intakeWristServo.getPosition());
+        bot.telem.addData("Intake Claw Position", intakeClawServo.getPosition());
         bot.telem.addData("Intake Sub Sensor Voltage", intakeSubSensor.getVoltage());
     }
 
@@ -111,17 +152,62 @@ public class Intake extends SubsystemBase {
         return (voltage / maxVoltage) * 360;
     }
 
-    public double getTurretDegrees() {
-        double feedbackVoltage = turretEncoder.getVoltage();
+    public double getEncoderDegrees() {
+        double feedbackVoltage = intakeTurretEncoder.getVoltage();
         return mapVoltageToDegrees(feedbackVoltage);
+    }
+
+    private void updateAngleCalculation() {
+        // Apply the zero-offset to get a corrected angle relative to the home position.
+        double correctedEncoderAngle = (getEncoderDegrees() - encoderZeroOffset + 360) % 360;
+
+        // --- Robust Wrap-Around Detection ---
+        // This logic determines if the servo has crossed its 0/360 boundary.
+        // It checks if the angle jumped more than halfway around in a single loop.
+        double delta = correctedEncoderAngle - previousEncoderAngle;
+
+        if (delta < -180.0) {
+            // Wrapped forward (e.g., from 350 to 10)
+            servoRevolution++;
+        } else if (delta > 180.0) {
+            // Wrapped backward (e.g., from 10 to 350)
+            servoRevolution--;
+        }
+
+        // Update the previous angle for the next loop's calculation.
+        previousEncoderAngle = correctedEncoderAngle;
+
+        // --- Final Angle Calculation ---
+        // 1. Calculate the servo's total, continuous angle.
+        double continuousServoAngle = (servoRevolution * 360.0) + correctedEncoderAngle;
+
+        // 2. Convert the servo's continuous angle to the turret's continuous angle.
+        double continuousTurretAngle = continuousServoAngle / INTAKE_TURRET_RATIO;
+
+        // 3. Convert the turret's continuous angle to a final, wrapping 0-360 angle.
+        // The double modulo `((... % 360) + 360) % 360` is a robust way
+        // to handle negative results if the turret moves past zero.
+        currentTurretAngle = ((continuousTurretAngle % 360.0) + 360.0) % 360.0;
     }
 
     public void setTurretAngle(double angle) {
         targetTurretAngle = angle;
     }
 
+    public double getTurretAngle() {
+        return currentTurretAngle;
+    }
+
+    public void setIntakeTurretPower(double power) {
+        intakeTurretServo.setPower(power);
+    }
+
+    public boolean isIntakeTurretLimitSwitchPressed() {
+        return intakeTurretLimitSwitch.getState();
+    }
+
     public void setIntakeArmAngle(double angle) {
-        intakeArmServo.setPosition(ServoFunctions.degreesToServoPosition((ServoFunctions.clampAngleDegrees(angle, INTAKE_ARM_MIN_ANGLE, INTAKE_ARM_MAX_ANGLE)), INTAKE_ARM_SERVO_RANGE));
+        intakeArmServo.setPosition(ServoFunctions.degreesToServoPosition((ServoFunctions.clampAngleDegrees(angle, INTAKE_ARM_MIN_ANGLE, INTAKE_ARM_MAX_ANGLE)), INTAKE_ARM_SERVO_RANGE * INTAKE_ARM_RATIO));
     }
 
     public void setIntakeArmPosition(double position) {
@@ -136,7 +222,7 @@ public class Intake extends SubsystemBase {
     }
 
     public void setIntakeWristAngle(double angle) {
-        intakeWristServo.setPosition(ServoFunctions.degreesToServoPosition((ServoFunctions.clampAngleDegrees(angle, INTAKE_WRIST_MIN_ANGLE, INTAKE_WRIST_MAX_ANGLE)), INTAKE_WRIST_SERVO_RANGE));
+        intakeWristServo.setPosition(ServoFunctions.degreesToServoPosition((ServoFunctions.clampAngleDegrees(angle, INTAKE_WRIST_MIN_ANGLE, INTAKE_WRIST_MAX_ANGLE)), INTAKE_WRIST_SERVO_RANGE * INTAKE_WRIST_RATIO));
     }
 
     public void setIntakeClawPosition(IntakeClawState state) {

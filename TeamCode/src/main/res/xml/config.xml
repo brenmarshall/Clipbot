@@ -1,0 +1,36 @@
+<Robot type="FirstInspires-FTC">
+    <LynxUsbDevice name="Control Hub Portal" serialNumber="(embedded)" parentModuleAddress="173">
+        <LynxModule name="Expansion Hub 2" port="2">
+            <goBILDA5202SeriesMotor name="frontLeft" port="0"/>
+            <goBILDA5202SeriesMotor name="frontRight" port="1"/>
+            <goBILDA5202SeriesMotor name="backRight" port="2"/>
+            <goBILDA5202SeriesMotor name="backLeft" port="3"/>
+            <Servo name="leftPTO" port="0"/>
+            <Servo name="rightPTO" port="1"/>
+            <ContinuousRotationServo name="intakeTurretServo" port="2"/>
+            <Servo name="intakeArmServo" port="3"/>
+            <Servo name="intakeWristServo" port="4"/>
+            <Servo name="intakeClawServo" port="5"/>
+            <AnalogInput name="intakeTurretEncoder" port="0"/>
+            <AnalogInput name="intakeSubSensor" port="2"/>
+            <DigitalDevice name="intakeTurretLimitSwitch" port="0"/>
+            <DigitalDevice name="intakeClawSensor" port="2"/>
+        </LynxModule>
+        <LynxModule name="Control Hub" port="173">
+            <goBILDA5202SeriesMotor name="intakeSlidesMotor" port="0"/>
+            <goBILDA5202SeriesMotor name="clipperDriveMotor" port="1"/>
+            <goBILDA5202SeriesMotor name="leftDepositSlidesMotor" port="2"/>
+            <goBILDA5202SeriesMotor name="rightDepositSlidesMotor" port="3"/>
+            <Servo name="clipperServo" port="0"/>
+            <Servo name="clipmagPivotServo" port="1"/>
+            <Servo name="clipmagClawServo" port="2"/>
+            <Servo name="depositArmServo" port="3"/>
+            <Servo name="depositWristServo" port="4"/>
+            <Servo name="depositClawServo" port="5"/>
+            <AnalogInput name="depositArmEncoder" port="0"/>
+            <DigitalDevice name="clipperLimitSwitch" port="0"/>
+            <goBILDAPinpoint name="odo" port="0" bus="1"/>
+        </LynxModule>
+    </LynxUsbDevice>
+    <Webcam name="Webcam 1" serialNumber="01.00.00"/>
+</Robot>
